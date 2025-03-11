@@ -4,3 +4,10 @@ if os.path.exists("database.db"):
     os.remove("database.db")
 
 db = sqlite3.connect("database.db")
+
+db.execute("""
+           CREATE TABLE Visits (
+               id INTEGER PRIMARY KEY,
+               time TEXT
+           )
+           """)

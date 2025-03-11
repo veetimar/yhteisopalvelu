@@ -7,9 +7,9 @@ class Database:
         return id
 
     def query(self, sql, args=[], one=False):
-        result = self.db.execute(sql, args).fetchall()
-        return result if not one else result[0]
-    
+        cursor = self.db.execute(sql, args)
+        return cursor.fetchall() if not one else cursor.fetchone()
+
     def __enter__(self):
         self.db = sqlite3.connect("database.db")
         self.db.execute("PRAGMA foreign_keys = ON")
