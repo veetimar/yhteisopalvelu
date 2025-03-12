@@ -1,21 +1,27 @@
-import sqlite3, os
+import sqlite3, os, secrets
 
-if os.path.exists("database.db"):
-    os.remove("database.db")
+def __create_config():
+    with open("config.py", "w") as file:
+        file.write(f"secret_key = \"{secrets.token_hex(16)}\"")
 
-db = sqlite3.connect("database.db")
+def __create_database():
+    if os.path.exists("database.db"):
+        os.remove("database.db")
+    db = sqlite3.connect("database.db")
+    db.execute("""
+            CREATE TABLE Visits (
+                id INTEGER PRIMARY KEY,
+                time TEXT
+            )
+            """)
+    db.execute("""
+            CREATE TABLE Users (
+                id INTEGER PRIMARY KEY,
+                username TEXT UNIQUE,
+                passwd TEXT
+            )
+            """)
+    db.close()
 
-db.execute("""
-           CREATE TABLE Visits (
-               id INTEGER PRIMARY KEY,
-               time TEXT
-           )
-           """)
-
-db.execute("""
-           CREATE TABLE Users (
-               id INTEGER PRIMARY KEY,
-               username TEXT UNIQUE,
-               passwd TEXT
-           )
-           """)
+__create_config()
+__create_database()

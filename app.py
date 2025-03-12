@@ -1,7 +1,8 @@
-import flask
+import flask, config
 from database import Database
 
 app = flask.Flask(__name__)
+app.secret_key = config.secret_key
 
 @app.route("/")
 def index():
