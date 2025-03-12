@@ -11,3 +11,11 @@ db.execute("""
                time TEXT
            )
            """)
+
+db.execute("""
+           CREATE TABLE Users (
+               id INTEGER PRIMARY KEY,
+               username TEXT UNIQUE,
+               passwd TEXT
+           )
+           """)
