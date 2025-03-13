@@ -2,7 +2,7 @@ import sqlite3, os, secrets
 
 def __create_config():
     with open("config.py", "w") as file:
-        file.write(f"secret_key = \"{secrets.token_hex(16)}\"")
+        file.write(f"SECRET_KEY = \"{secrets.token_hex(16)}\"\n")
 
 def __create_database():
     if os.path.exists("database.db"):
