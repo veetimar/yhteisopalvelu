@@ -2,7 +2,7 @@
 <html lang="fi">
   <head>
     <meta charset="UTF-8">
-    <title>Kirjaudu</title>
+    <title>Kirjaudu sisään</title>
   </head>
   <body>
     <form action="/create_session" method="post">
@@ -14,7 +14,12 @@
         Salasana: <br />
         <input type="password" name="password" />
       </p>
-      <input type="submit" value="Kirjaudu" />
+      <input type="submit" value="Kirjaudu sisään" />
     </form>
+    {% if message %}
+    <p>
+      {{ message }}
+    </p>
+    {% endif %}
   </body>
 </html>

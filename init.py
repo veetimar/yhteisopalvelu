@@ -18,7 +18,7 @@ def __create_database():
             CREATE TABLE Users (
                 id INTEGER PRIMARY KEY,
                 username TEXT UNIQUE,
-                passwd TEXT
+                pwhash TEXT
             )
             """)
     db.close()

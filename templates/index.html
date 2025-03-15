@@ -5,12 +5,22 @@
     <title>Yhteisöpalvelu</title>
   </head>
   <body>
+    {% if session.username %}
+    <p>
+      Tervetuloa <i>{{ session.username }}</i>
+    </p>
+    <p>
+      <a href="/logout">Kirjaudu ulos</a>
+    </p>
+    {% else %}
     <p>
       <a href="/register">Rekisteröidy</a>
     </p>
     <p>
-      <a href="/login">Kirjaudu</a>
+      <a href="/login">Kirjaudu sisään</a>
     </p>
+    {% endif %}
+    <hr />
     <p>Tätä sivua on ladattu {{visits}} kertaa</p>
   </body>
 </html>

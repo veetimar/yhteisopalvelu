@@ -20,5 +20,10 @@
       </p>
       <input type="submit" value="Rekisteröidy" />
     </form>
+    {% if message %}
+    <p>
+      {{ message }}
+    </p>
+    {% endif %}
   </body>
 </html>
