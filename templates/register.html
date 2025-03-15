@@ -5,6 +5,20 @@
     <title>Rekisteröidy</title>
   </head>
   <body>
-    <p>Rekisteröitymissivu</p>
+    <form action="/create_account" method="post">
+      <p>
+        Käyttäjätunnus: <br />
+        <input type="text" name="username" />
+      </p>
+      <p>
+        Salasana: <br />
+        <input type="password" name="password1" />
+      </p>
+      <p>
+        Salasana uudelleen: <br />
+        <input type="password" name="password2" />
+      </p>
+      <input type="submit" value="Rekisteröidy" />
+    </form>
   </body>
 </html>

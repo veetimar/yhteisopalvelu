@@ -15,6 +15,20 @@ def index():
 def register():
     return flask.render_template("register.html")
 
+@app.route("/create_account", methods=["POST"])
+def create_account():
+    return flask.redirect("/")
+
 @app.route("/login")
 def login():
     return flask.render_template("login.html")
+
+@app.route("/create_session", methods=["POST"])
+def create_session():
+    return flask.redirect("/")
+
+@app.route("/logout")
+def logout():
+    if "username" in flask.session:
+        del flask.session["username"]
+    return flask.redirect("/")

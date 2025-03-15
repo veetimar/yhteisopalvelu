@@ -5,6 +5,16 @@
     <title>Kirjaudu</title>
   </head>
   <body>
-    <p>Kirjautumissivu</p>
+    <form action="/create_session" method="post">
+      <p>
+        Käyttäjätunnus: <br />
+        <input type="text" name="username" />
+      </p>
+      <p>
+        Salasana: <br />
+        <input type="password" name="password" />
+      </p>
+      <input type="submit" value="Kirjaudu" />
+    </form>
   </body>
 </html>
