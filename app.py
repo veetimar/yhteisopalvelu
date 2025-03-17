@@ -1,9 +1,10 @@
-import flask, werkzeug.security as sec
+import flask, werkzeug.security as security, werkzeug.middleware.proxy_fix as proxy_fix
 from config import SECRET_KEY
 from database import Database
 
 app = flask.Flask(__name__)
 app.secret_key = SECRET_KEY
+app.wsgi_app = proxy_fix.ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
 @app.route("/")
 def index():
@@ -31,7 +32,7 @@ def create_account():
     if not password1:
         flask.session["message"] = "VIRHE: Tyhjä salasana"
         return flask.redirect("/register")
-    pwhash = sec.generate_password_hash(password1)
+    pwhash = security.generate_password_hash(password1)
     try:
         with Database() as db:
             db.execute("INSERT INTO Users (username, pwhash) VALUES (?, ?)", [username, pwhash], commit=True)
@@ -53,7 +54,7 @@ def create_session():
     with Database() as db:
         result = db.query("SELECT pwhash FROM Users WHERE username = ?", [username], one=True)
     pwhash = result[0] if result else None
-    if pwhash and sec.check_password_hash(pwhash, password):
+    if pwhash and security.check_password_hash(pwhash, password):
         flask.session["username"] = username
         return flask.redirect("/")
     flask.session["message"] = "VIRHE: Väärä käyttäjätunnus tai salasana"
