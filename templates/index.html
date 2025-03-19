@@ -2,25 +2,58 @@
 <html lang="fi">
   <head>
     <meta charset="UTF-8">
-    <title>Yhteisöpalvelu</title>
+    <title>Etusivu</title>
   </head>
   <body>
-    {% if session.username %}
-    <p>
-      Tervetuloa <i>{{ session.username }}</i>
-    </p>
-    <p>
-      <a href="/logout">Kirjaudu ulos</a>
-    </p>
-    {% else %}
-    <p>
-      <a href="/register">Rekisteröidy</a>
-    </p>
-    <p>
-      <a href="/login">Kirjaudu sisään</a>
-    </p>
-    {% endif %}
+    <div class="top">
+      <h2>
+        Etusivu
+      </h2>
+      {% if session.username %}
+      <p>
+        Tervetuloa <i>{{ session.username }}</i>
+      </p>
+      <p>
+        <a href="/logout">Kirjaudu ulos</a>
+      </p>
+      <p>
+        <a href="/new_post">Julkaise postaus</a>
+      </p>
+      {% else %}
+      <p>
+        <a href="/register">Rekisteröidy</a>
+      </p>
+      <p>
+        <a href="/login">Kirjaudu sisään</a>
+      </p>
+      <p>
+        Kirjaudu sisään postataksesi
+      </p>
+      {% endif %}
+    </div>
     <hr />
-    <p>Tätä sivua on ladattu {{visits}} kertaa</p>
+    <div class="posts">
+      {% for post in posts %}
+      <p>
+        {{ post.time }}, <i>{{ post.username }}</i>:
+      </p>
+      <p>
+        {{ post.content }}
+      </p>
+      <p>
+        <a href="/show_post/{{ post.id }}">{{ post.count }} kommenttia</a>
+      </p>
+      {% if post.username == session.username %}
+      <p>
+        <a href="/edit_post/{{ post.id }}">Muokkaa</a> |
+        <a href="/delete_post/{{ post.id }}">Poista</a>
+      </p>
+      {% endif %}
+      <hr />
+      {% endfor %}
+    </div>
+    <div class="bottom">
+      <p>Tätä sivua on ladattu {{ visits }} kertaa</p>
+    </div>
   </body>
 </html>

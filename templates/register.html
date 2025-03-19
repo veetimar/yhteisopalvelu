@@ -5,25 +5,30 @@
     <title>Rekisteröidy</title>
   </head>
   <body>
-    <form action="/create_account" method="post">
+    <div class="register">
+      <h2>
+        Rekisteröidy
+      </h2>
+      <form action="/create_account" method="post">
+        <p>
+          Käyttäjätunnus: <br />
+          <input type="text" name="username" />
+        </p>
+        <p>
+          Salasana: <br />
+          <input type="password" name="password1" />
+        </p>
+        <p>
+          Salasana uudelleen: <br />
+          <input type="password" name="password2" />
+        </p>
+        <input type="submit" value="Rekisteröidy" />
+      </form>
+      {% if message %}
       <p>
-        Käyttäjätunnus: <br />
-        <input type="text" name="username" />
+        {{ message }}
       </p>
-      <p>
-        Salasana: <br />
-        <input type="password" name="password1" />
-      </p>
-      <p>
-        Salasana uudelleen: <br />
-        <input type="password" name="password2" />
-      </p>
-      <input type="submit" value="Rekisteröidy" />
-    </form>
-    {% if message %}
-    <p>
-      {{ message }}
-    </p>
-    {% endif %}
+      {% endif %}
+    </div>
   </body>
 </html>

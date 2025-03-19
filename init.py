@@ -9,18 +9,35 @@ def __create_database():
         os.remove("database.db")
     db = sqlite3.connect("database.db")
     db.execute("""
-            CREATE TABLE Visits (
-                id INTEGER PRIMARY KEY,
-                time TEXT
-            )
-            """)
+               CREATE TABLE Visits (
+                   id INTEGER PRIMARY KEY,
+                   time TEXT
+               )
+               """)
     db.execute("""
-            CREATE TABLE Users (
-                id INTEGER PRIMARY KEY,
-                username TEXT UNIQUE,
-                pwhash TEXT
-            )
-            """)
+               CREATE TABLE Users (
+                   id INTEGER PRIMARY KEY,
+                   username TEXT UNIQUE,
+                   pwhash TEXT
+               )
+               """)
+    db.execute("""
+               CREATE TABLE Posts (
+                   id INTEGER PRIMARY KEY,
+                   content TEXT,
+                   time TEXT,
+                   user_id INTEGER REFERENCES Users ON DELETE CASCADE
+               )
+               """)
+    db.execute("""
+               CREATE TABLE Comments (
+                   id INTEGER PRIMARY KEY,
+                   content TEXT,
+                   time TEXT,
+                   user_id INTEGER REFERENCES Users ON DELETE CASCADE,
+                   post_id INTEGER REFERENCES Posts ON DELETE CASCADE
+               )
+               """)
     db.close()
 
 __create_config()

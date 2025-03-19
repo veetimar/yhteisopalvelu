@@ -5,21 +5,26 @@
     <title>Kirjaudu sisään</title>
   </head>
   <body>
-    <form action="/create_session" method="post">
+    <div class="login">
+      <h2>
+        Kirjaudu sisään
+      </h2>
+      <form action="/create_session" method="post">
+        <p>
+          Käyttäjätunnus: <br />
+          <input type="text" name="username" />
+        </p>
+        <p>
+          Salasana: <br />
+          <input type="password" name="password" />
+        </p>
+        <input type="submit" value="Kirjaudu sisään" />
+      </form>
+      {% if message %}
       <p>
-        Käyttäjätunnus: <br />
-        <input type="text" name="username" />
+        {{ message }}
       </p>
-      <p>
-        Salasana: <br />
-        <input type="password" name="password" />
-      </p>
-      <input type="submit" value="Kirjaudu sisään" />
-    </form>
-    {% if message %}
-    <p>
-      {{ message }}
-    </p>
-    {% endif %}
+      {% endif %}
+    </div>
   </body>
 </html>

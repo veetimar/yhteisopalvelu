@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="fi">
+  <head>
+    <meta charset="UTF-8">
+    <title>Muokkaa postausta</title>
+  </head>
+  <body>
+    <div class="edit_post">
+      <h2>
+        Muokkaa postausta
+      </h2>
+      <form action="/confirm_edit_post/{{ post.id }}" method="post">
+        <p>
+          Tee tarvittavat muutokset: <br />
+          <textarea name="content" rows="5" cols="50">{{ post.content }}</textarea>
+        </p>
+        <input type="submit" value="Muokkaa" />
+      </form>
+    </div>
+  </body>
+</html>
