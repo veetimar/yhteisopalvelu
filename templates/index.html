@@ -41,7 +41,7 @@
         {{ post.content }}
       </p>
       <p>
-        <a href="/show_post/{{ post.id }}">{{ post.count }} kommenttia</a>
+        <a href="/comments/{{ post.id }}">{{ post.count }} kommenttia</a>
       </p>
       {% if post.username == session.username %}
       <p>

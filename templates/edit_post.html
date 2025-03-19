@@ -9,7 +9,7 @@
       <h2>
         Muokkaa postausta
       </h2>
-      <form action="/confirm_edit_post/{{ post.id }}" method="post">
+      <form action="/edit_post/{{ post.id }}" method="post">
         <p>
           Tee tarvittavat muutokset: <br />
           <textarea name="content" rows="5" cols="50">{{ post.content }}</textarea>
