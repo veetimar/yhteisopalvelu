@@ -124,7 +124,7 @@ def delete_post(post_id):
 def comments(post_id):
     with Database() as db:
         post = db.query("SELECT P.id, P.content, P.time, U.username FROM Posts P, Users U WHERE P.user_id = U.id AND P.id = ?", [post_id], one=True)
-        comments = db.query("SELECT C.id, C.content, C.time, U.username FROM Comments C, Users U WHERE C.user_id = U.id")
+        comments = db.query("SELECT C.id, C.content, C.time, U.username FROM Comments C, Users U WHERE C.user_id = U.id AND C.post_id = ?", [post_id])
     if not post:
         return flask.redirect("/permission_denied")
     return flask.render_template("comments.html", post=post, comments=comments)
