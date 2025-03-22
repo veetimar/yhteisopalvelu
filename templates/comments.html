@@ -6,9 +6,17 @@
   </head>
   <body>
     <div class="top">
-      <h2>
-        Postaus {{ post.id }}
-      </h2>
+      <a href="/">Etusivulle</a>
+      <hr />
+      <hr />
+    </div>
+    <div class = "old">
+      <p>
+        {{ post.time }}, <i>{{ post.username }}</i>:
+      </p>
+      <p>
+        {{ post.content }}
+      </p>
       {% if session.username %}
       <p>
         <a href="/new_comment/{{ post.id }}">Kommentoi</a>
@@ -18,18 +26,10 @@
         <a href=/login>Kirjaudu sisään</a> kommentoidaksesi
       </p>
       {% endif %}
+      <hr />
+      <hr />
     </div>
-    <hr />
-    <hr />
     <div class="posts">
-      <p>
-        {{ post.time }}, <i>{{ post.username }}</i>:
-      </p>
-      <p>
-        {{ post.content }}
-      </p>
-      <hr />
-      <hr />
       {% for comment in comments %}
       <p>
         {{ comment.time }}, <i>{{ comment.username }}</i>:

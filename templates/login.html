@@ -5,6 +5,11 @@
     <title>Kirjaudu sisään</title>
   </head>
   <body>
+    <div class="top">
+      <a href="/">Etusivulle</a>
+      <hr />
+      <hr />
+    </div>
     <div class="login">
       <h2>
         Kirjaudu sisään
@@ -20,6 +25,9 @@
         </p>
         <input type="submit" value="Kirjaudu sisään" />
       </form>
+      <p>
+        Tai <a href="/register">Rekisteröidy</a>
+      </p>
       {% if message %}
       <p>
         {{ message }}
