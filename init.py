@@ -11,31 +11,31 @@ def __create_database():
     db.execute("""
                CREATE TABLE Visits (
                    id INTEGER PRIMARY KEY,
-                   time TEXT
+                   time TEXT NOT NULL
                )
                """)
     db.execute("""
                CREATE TABLE Users (
                    id INTEGER PRIMARY KEY,
-                   username TEXT UNIQUE,
-                   pwhash TEXT
+                   username TEXT NOT NULL UNIQUE,
+                   pwhash TEXT NOT NULL
                )
                """)
     db.execute("""
                CREATE TABLE Posts (
                    id INTEGER PRIMARY KEY,
-                   content TEXT,
-                   time TEXT,
+                   content TEXT NOT NULL,
+                   time TEXT NOT NULL,
                    user_id INTEGER REFERENCES Users ON DELETE CASCADE
                )
                """)
     db.execute("""
                CREATE TABLE Comments (
                    id INTEGER PRIMARY KEY,
-                   content TEXT,
-                   time TEXT,
-                   user_id INTEGER REFERENCES Users ON DELETE CASCADE,
-                   post_id INTEGER REFERENCES Posts ON DELETE CASCADE
+                   content TEXT NOT NULL,
+                   time TEXT NOT NULL,
+                   user_id INTEGER NOT NULL REFERENCES Users ON DELETE CASCADE,
+                   post_id INTEGER NOT NULL REFERENCES Posts ON DELETE CASCADE
                )
                """)
     db.close()
