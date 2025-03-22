@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fi">
+  <head>
+    <meta charset="UTF-8">
+    <title>Postaus {{ post.id }}</title>
+  </head>
+  <body>
+    <div class="top">
+      <h2>
+        Postaus {{ post.id }}
+      </h2>
+      {% if session.username %}
+      <p>
+        <a href="/new_comment/{{ post.id }}">Kommentoi</a>
+      </p>
+      {% else %}
+      <p>
+        <a href=/login>Kirjaudu sisään</a> kommentoidaksesi
+      </p>
+      {% endif %}
+    </div>
+    <hr />
+    <hr />
+    <div class="posts">
+      <p>
+        {{ post.time }}, <i>{{ post.username }}</i>:
+      </p>
+      <p>
+        {{ post.content }}
+      </p>
+      <hr />
+      <hr />
+      {% for comment in comments %}
+      <p>
+        {{ comment.time }}, <i>{{ comment.username }}</i>:
+      </p>
+      <p>
+        {{ comment.content }}
+      </p>
+      {% if comment.username == session.username %}
+      <p>
+        <a href="/edit_comment/{{ comment.id}}">Muokkaa</a> |
+        <a href="/delete_comment/{{ comment.id }}">Poista</a>
+      </p>
+      {% endif %}
+      <hr />
+      {% endfor %}
+    </div>
+  </body>
+</html>

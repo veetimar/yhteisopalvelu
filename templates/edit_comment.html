@@ -2,17 +2,17 @@
 <html lang="fi">
   <head>
     <meta charset="UTF-8">
-    <title>Muokkaa postausta</title>
+    <title>Muokkaa kommenttia</title>
   </head>
   <body>
     <div class="edit">
       <h2>
-        Muokkaa postausta
+        Muokkaa kommenttia
       </h2>
-      <form action="/edit_post/{{ post.id }}" method="post">
+      <form action="/edit_comment/{{ comment.id }}" method="post">
         <p>
           Tee tarvittavat muutokset: <br />
-          <textarea name="content" rows="5" cols="50">{{ post.content }}</textarea>
+          <textarea name="content" rows="5" cols="50">{{ comment.content }}</textarea>
         </p>
         <input type="submit" value="Muokkaa" />
       </form>

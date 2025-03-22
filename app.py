@@ -76,9 +76,13 @@ def new_post():
     if "id" not in flask.session:
         return flask.redirect("/login")
     if flask.request.method == "GET":
-        return flask.render_template("new_post.html")
+        message = flask.session.pop("message", None)
+        return flask.render_template("new_post.html", message=message)
     if flask.request.method == "POST":
         content = flask.request.form["content"]
+        if not content:
+            flask.session["message"] = "VIRHE: Tyhjä postaus"
+            return flask.redirect("/new_post")
         user_id = flask.session["id"]
         with Database() as db:
             db.execute("INSERT INTO Posts (content, time, user_id) VALUES (?, datetime('now'), ?)", [content, user_id], commit=True)
@@ -88,15 +92,18 @@ def new_post():
 def edit_post(post_id):
     if "id" not in flask.session:
         return flask.redirect("/login")
-    user_id = flask.session["id"]
     with Database() as db:
         post = db.query("SELECT id, user_id, content FROM Posts WHERE id = ?", [post_id], one=True)
-    if post["user_id"] != user_id:
-        return flask.redirect("/")
+    if not post or post["user_id"] != flask.session["id"]:
+        return flask.redirect("/permission_denied")
     if flask.request.method == "GET":
-        return flask.render_template("/edit_post.html", post=post)
+        message = flask.session.pop("message", None)
+        return flask.render_template("/edit_post.html", post=post, message=message)
     if flask.request.method == "POST":
         content = flask.request.form["content"]
+        if not content:
+            flask.session["message"] = "VIRHE: Tyhjä postaus"
+            return flask.redirect(f"/edit_post/{post_id}")
         with Database() as db:
             db.execute("UPDATE Posts SET content = ? WHERE id = ?", [content, post_id], commit=True)
         return flask.redirect("/")
@@ -105,15 +112,72 @@ def edit_post(post_id):
 def delete_post(post_id):
     if "id" not in flask.session:
         return flask.redirect("/login")
-    user_id = flask.session["id"]
     with Database() as db:
-        owner_id = db.query("SELECT user_id FROM Posts P WHERE P.id = ?", [post_id], one=True)[0]
-    if owner_id != user_id:
-        return flask.redirect("/")
+        post = db.query("SELECT user_id FROM Posts P WHERE P.id = ?", [post_id], one=True)
+    if not post or post["user_id"] != flask.session["id"]:
+        return flask.redirect("/permission_denied")
     with Database() as db:
         db.execute("DELETE FROM Posts WHERE id = ?", [post_id], commit=True)
     return flask.redirect("/")
 
 @app.route("/comments/<int:post_id>")
 def comments(post_id):
-    return flask.render_template("comments.html")
+    with Database() as db:
+        post = db.query("SELECT P.id, P.content, P.time, U.username FROM Posts P, Users U WHERE P.user_id = U.id AND P.id = ?", [post_id], one=True)
+        comments = db.query("SELECT C.id, C.content, C.time, U.username FROM Comments C, Users U WHERE C.user_id = U.id")
+    if not post:
+        return flask.redirect("/permission_denied")
+    return flask.render_template("comments.html", post=post, comments=comments)
+
+@app.route("/new_comment/<int:post_id>", methods=["GET", "POST"])
+def new_comment(post_id):
+    if "id" not in flask.session:
+        return flask.redirect("/login")
+    if flask.request.method == "GET":
+        message = flask.session.pop("message", None)
+        return flask.render_template("new_comment.html", post_id=post_id, message=message)
+    if flask.request.method == "POST":
+        content = flask.request.form["content"]
+        if not content:
+            flask.session["message"] = "VIRHE: Tyhjä kommentti"
+            return flask.redirect(f"/new_comment/{post_id}") 
+        user_id = flask.session["id"]
+        with Database() as db:
+            db.execute("INSERT INTO Comments (content, time, user_id, post_id) VALUES (?, datetime('now'), ?, ?)", [content, user_id, post_id], commit=True)
+        return flask.redirect(f"/comments/{post_id}")
+
+@app.route("/edit_comment/<int:comment_id>", methods=["GET", "POST"])
+def edit_domment(comment_id):
+    if "id" not in flask.session:
+        return flask.redirect("/login")
+    with Database() as db:
+        comment = db.query("SELECT id, user_id, content, post_id FROM Comments C WHERE C.id = ?", [comment_id], one=True)
+    if not comment or comment["user_id"] != flask.session["id"]:
+        return flask.redirect("/permission_denied")
+    if flask.request.method == "GET":
+        message = flask.session.pop("message", None)
+        return flask.render_template("edit_comment.html", comment=comment, message=message)
+    if flask.request.method == "POST":
+        content = flask.request.form["content"]
+        if not content:
+            flask.session["message"] = "VIRHE: Tyhjä kommentti"
+            return flask.redirect(f"/edit_comment/{comment_id}") 
+        with Database() as db:
+            db.execute("UPDATE Comments SET content = ? WHERE id = ?", [content, comment_id], commit=True)
+        return flask.redirect(f"/comments/{comment["post_id"]}")
+
+@app.route("/delete_comment/<int:comment_id>")
+def delete_domment(comment_id):
+    if "id" not in flask.session:
+        return flask.redirect("/login")
+    with Database() as db:
+        comment = db.query("SELECT user_id, post_id FROM Comments C WHERE C.id = ?", [comment_id], one=True)
+    if not comment or comment["user_id"] != flask.session["id"]:
+        return flask.redirect("/permission_denied")
+    with Database() as db:
+        db.execute("DELETE FROM Comments WHERE id = ?", [comment_id], commit=True)
+    return flask.redirect(f"/comments/{comment["post_id"]}")
+
+@app.route("/permission_denied")
+def permission_denied():
+    return flask.render_template("permission_denied.html")

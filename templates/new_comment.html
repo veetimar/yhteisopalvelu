@@ -2,19 +2,19 @@
 <html lang="fi">
   <head>
     <meta charset="UTF-8">
-    <title>Julkaise postaus</title>
+    <title>Kommentoi postausta</title>
   </head>
   <body>
     <div class="new">
       <h2>
-        Julkaise postaus
+        Kommentoi postausta
       </h2>
-      <form action="/new_post" method="post">
+      <form action="/new_comment/{{ post_id }}" method="post">
         <p>
           Mitä mietteitä: <br />
           <textarea name="content" rows="5" cols="50"></textarea>
         </p>
-        <input type="submit" value="Julkaise" />
+        <input type="submit" value="Kommentoi" />
       </form>
       {% if message %}
       <p>
