@@ -165,7 +165,7 @@ def edit_domment(comment_id):
 def delete_comment(comment_id):
     comment = database.get_comment(comment_id=comment_id)
     if not comment:
-        flask.abort(403)
+        flask.abort(404)
     if comment["user_id"] != flask.session["id"]:
         flask.abort(403)
     with database.Database() as db:
