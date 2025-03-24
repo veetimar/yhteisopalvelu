@@ -99,7 +99,7 @@ def edit_post(post_id):
     with Database() as db:
         post = db.query("SELECT id, user_id, content FROM Posts WHERE id = ?", [post_id], one=True)
     if not post or post["user_id"] != flask.session["id"]:
-        return flask.redirect("/permission_denied")
+        flask.abort(403)
     if flask.request.method == "GET":
         message = flask.session.pop("message", None)
         return flask.render_template("/edit_post.html", post=post, message=message)
@@ -119,7 +119,7 @@ def delete_post(post_id):
     with Database() as db:
         post = db.query("SELECT user_id FROM Posts P WHERE P.id = ?", [post_id], one=True)
     if not post or post["user_id"] != flask.session["id"]:
-        return flask.redirect("/permission_denied")
+        flask.abort(403)
     with Database() as db:
         db.execute("DELETE FROM Posts WHERE id = ?", [post_id], commit=True)
     return flask.redirect("/")
@@ -130,7 +130,7 @@ def comments(post_id):
         post = db.query("SELECT P.id, P.content, P.class, P.time, U.username FROM Posts P, Users U WHERE P.user_id = U.id AND P.id = ?", [post_id], one=True)
         comments = db.query("SELECT C.id, C.content, C.time, U.username FROM Comments C, Users U WHERE C.user_id = U.id AND C.post_id = ?", [post_id])
     if not post:
-        return flask.redirect("/permission_denied")
+        flask.abort(403)
     return flask.render_template("comments.html", post=post, comments=comments)
 
 @app.route("/new_comment/<int:post_id>", methods=["GET", "POST"])
@@ -157,7 +157,7 @@ def edit_domment(comment_id):
     with Database() as db:
         comment = db.query("SELECT id, user_id, content, post_id FROM Comments C WHERE C.id = ?", [comment_id], one=True)
     if not comment or comment["user_id"] != flask.session["id"]:
-        return flask.redirect("/permission_denied")
+        flask.abort(403)
     if flask.request.method == "GET":
         message = flask.session.pop("message", None)
         return flask.render_template("edit_comment.html", comment=comment, message=message)
@@ -177,11 +177,7 @@ def delete_domment(comment_id):
     with Database() as db:
         comment = db.query("SELECT user_id, post_id FROM Comments C WHERE C.id = ?", [comment_id], one=True)
     if not comment or comment["user_id"] != flask.session["id"]:
-        return flask.redirect("/permission_denied")
+        flask.abort(403)
     with Database() as db:
         db.execute("DELETE FROM Comments WHERE id = ?", [comment_id], commit=True)
     return flask.redirect(f"/comments/{comment["post_id"]}")
-
-@app.route("/permission_denied")
-def permission_denied():
-    return flask.render_template("permission_denied.html")
