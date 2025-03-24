@@ -100,11 +100,12 @@ def edit_post(post_id):
         return flask.render_template("/edit_post.html", post=post, message=message)
     if flask.request.method == "POST":
         content = flask.request.form["content"]
+        cs = flask.request.form["class"]
         if not content:
             flask.session["message"] = "VIRHE: Tyhjä postaus"
             return flask.redirect(f"/edit_post/{post_id}")
         with database.Database() as db:
-            db.execute("UPDATE Posts SET content = ? WHERE id = ?", [content, post_id], commit=True)
+            db.execute("UPDATE Posts SET content = ?, class = ? WHERE id = ?", [content, cs, post_id], commit=True)
         return flask.redirect("/")
 
 @app.route("/delete_post/<int:post_id>")
