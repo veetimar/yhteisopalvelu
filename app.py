@@ -1,9 +1,18 @@
-import flask, werkzeug.security as security, werkzeug.middleware.proxy_fix as proxy_fix
-import config, database
+import flask, werkzeug.security as security, werkzeug.middleware.proxy_fix as proxy_fix # third party
+import functools # built-in
+import config, database # self-made
 
 app = flask.Flask(__name__)
 app.secret_key = config.SECRET_KEY
 app.wsgi_app = proxy_fix.ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+
+def require_login(f):
+    @functools.wraps(f)
+    def wrapper(*args, **kwargs):
+        if "id" not in flask.session or "username" not in flask.session:
+            return flask.redirect("/login")
+        return f(*args, **kwargs)
+    return wrapper
 
 @app.route("/")
 def index():
@@ -66,9 +75,8 @@ def logout():
     return flask.redirect("/")
 
 @app.route("/new_post", methods=["GET", "POST"])
+@require_login
 def new_post():
-    if "id" not in flask.session:
-        return flask.redirect("/login")
     if flask.request.method == "GET":
         message = flask.session.pop("message", None)
         return flask.render_template("new_post.html", message=message)
@@ -87,9 +95,8 @@ def new_post():
         return flask.redirect("/")
 
 @app.route("/edit_post/<int:post_id>", methods=["GET", "POST"])
+@require_login
 def edit_post(post_id):
-    if "id" not in flask.session:
-        return flask.redirect("/login")
     post = database.get_post(post_id)
     if not post:
         flask.abort(404)
@@ -109,9 +116,8 @@ def edit_post(post_id):
         return flask.redirect("/")
 
 @app.route("/delete_post/<int:post_id>")
+@require_login
 def delete_post(post_id):
-    if "id" not in flask.session:
-        return flask.redirect("/login")
     post = database.get_post(post_id)
     if not post:
         flask.abort(404)
@@ -130,9 +136,8 @@ def comments(post_id):
     return flask.render_template("comments.html", post=post, comments=comments)
 
 @app.route("/new_comment/<int:post_id>", methods=["GET", "POST"])
+@require_login
 def new_comment(post_id):
-    if "id" not in flask.session:
-        return flask.redirect("/login")
     if flask.request.method == "GET":
         message = flask.session.pop("message", None)
         return flask.render_template("new_comment.html", post_id=post_id, message=message)
@@ -147,9 +152,8 @@ def new_comment(post_id):
         return flask.redirect(f"/comments/{post_id}")
 
 @app.route("/edit_comment/<int:comment_id>", methods=["GET", "POST"])
+@require_login
 def edit_domment(comment_id):
-    if "id" not in flask.session:
-        return flask.redirect("/login")
     comment = database.get_comment(comment_id=comment_id)
     if not comment:
         flask.abort(404)
@@ -168,9 +172,8 @@ def edit_domment(comment_id):
         return flask.redirect(f"/comments/{comment["post_id"]}")
 
 @app.route("/delete_comment/<int:comment_id>")
-def delete_domment(comment_id):
-    if "id" not in flask.session:
-        return flask.redirect("/login")
+@require_login
+def delete_comment(comment_id):
     comment = database.get_comment(comment_id=comment_id)
     if not comment:
         flask.abort(403)
