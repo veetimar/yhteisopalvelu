@@ -14,6 +14,9 @@
       <h2>
         Kirjaudu sisään
       </h2>
+      <p>
+        Tai <a href="/register">Rekisteröidy</a>
+      </p>
       <form action="/login" method="post">
         <p>
           Käyttäjätunnus: <br />
@@ -25,9 +28,6 @@
         </p>
         <input type="submit" value="Kirjaudu sisään" />
       </form>
-      <p>
-        Tai <a href="/register">Rekisteröidy</a>
-      </p>
       {% if message %}
       <p>
         {{ message }}
