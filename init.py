@@ -27,7 +27,7 @@ def __create_database():
                    content TEXT NOT NULL,
                    class TEXT NOT NULL,
                    time TEXT NOT NULL,
-                   user_id INTEGER REFERENCES Users ON DELETE CASCADE
+                   user_id INTEGER NOT NULL REFERENCES Users ON DELETE CASCADE
                )
                """)
     db.execute("""
