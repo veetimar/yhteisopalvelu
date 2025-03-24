@@ -17,19 +17,14 @@
       <form action="/new_post" method="post">
         <p>
           Mitä mietteitä: <br />
-          <textarea name="content" rows="5" cols="50"></textarea>
+          <textarea name="content" rows="5" cols="50" maxlength="1000" required></textarea>
         </p>
         <p>
-          <input type="radio" name="class" value="Shitpost" \> Shitpost
-          <input type="radio" name="class" value="Asiallinen" \> Asiallinen
+          <input type="radio" name="class" value="Shitpost" required \> Shitpost
+          <input type="radio" name="class" value="Asiallinen" required \> Asiallinen
         </p>
         <input type="submit" value="Julkaise" />
       </form>
-      {% if message %}
-      <p>
-        {{ message }}
-      </p>
-      {% endif %}
     </div>
   </body>
 </html>

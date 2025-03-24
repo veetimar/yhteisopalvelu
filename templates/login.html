@@ -20,11 +20,11 @@
       <form action="/login" method="post">
         <p>
           Käyttäjätunnus: <br />
-          <input type="text" name="username" />
+          <input type="text" name="username" maxlength="20" required />
         </p>
         <p>
           Salasana: <br />
-          <input type="password" name="password" />
+          <input type="password" name="password" maxlength="20" required />
         </p>
         <input type="submit" value="Kirjaudu sisään" />
       </form>

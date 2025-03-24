@@ -17,15 +17,10 @@
       <form action="/new_comment/{{ post_id }}" method="post">
         <p>
           Mitä mietteitä: <br />
-          <textarea name="content" rows="5" cols="50"></textarea>
+          <textarea name="content" rows="5" cols="50" maxlength="1000" required></textarea>
         </p>
         <input type="submit" value="Kommentoi" />
       </form>
-      {% if message %}
-      <p>
-        {{ message }}
-      </p>
-      {% endif %}
     </div>
   </body>
 </html>

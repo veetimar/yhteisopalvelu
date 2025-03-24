@@ -29,16 +29,12 @@ def register():
         return flask.render_template("register.html", message=message)
     if flask.request.method == "POST":
         username = flask.request.form["username"]
-        if not username:
-            flask.session["message"] = "VIRHE: Tyhjä käyttäjätunnus"
-            return flask.redirect("/register")
         password1 = flask.request.form["password1"]
         password2 = flask.request.form["password2"]
+        if not username or not password1 or not password2 or len(username) > 20 or len(password1) > 20 or len(password2) > 20:
+            flask.abort(403)
         if password1 != password2:
             flask.session["message"] = "VIRHE: Salasanat eivät täsmää"
-            return flask.redirect("/register")
-        if not password1:
-            flask.session["message"] = "VIRHE: Tyhjä salasana"
             return flask.redirect("/register")
         pwhash = security.generate_password_hash(password1)
         try:
@@ -58,6 +54,8 @@ def login():
     if flask.request.method == "POST":
         username = flask.request.form["username"]
         password = flask.request.form["password"]
+        if not username or not password or len(username) > 20 or len(password) > 20:
+            flask.abort(403)
         with database.Database() as db:
             user = db.query("SELECT id, pwhash FROM Users WHERE username = ?", [username], one=True)
         pwhash = user["pwhash"] if user else None
@@ -78,16 +76,11 @@ def logout():
 @require_login
 def new_post():
     if flask.request.method == "GET":
-        message = flask.session.pop("message", None)
-        return flask.render_template("new_post.html", message=message)
+        return flask.render_template("new_post.html")
     if flask.request.method == "POST":
         content = flask.request.form["content"]
-        if not content:
-            flask.session["message"] = "VIRHE: Tyhjä postaus"
-            return flask.redirect("/new_post")
-        if "class" not in flask.request.form:
-            flask.session["message"] = "VIRHE: Luokittelu puuttuu"
-            return flask.redirect("/new_post")
+        if not content or len(content) > 1000 or "class" not in flask.request.form:
+            flask.abort(403)
         cs = flask.request.form["class"]
         user_id = flask.session["id"]
         with database.Database() as db:
@@ -97,20 +90,18 @@ def new_post():
 @app.route("/edit_post/<int:post_id>", methods=["GET", "POST"])
 @require_login
 def edit_post(post_id):
-    post = database.get_post(post_id)
+    post = database.get_post(post_id=post_id)
     if not post:
         flask.abort(404)
     if post["user_id"] != flask.session["id"]:
         flask.abort(403)
     if flask.request.method == "GET":
-        message = flask.session.pop("message", None)
-        return flask.render_template("/edit_post.html", post=post, message=message)
+        return flask.render_template("/edit_post.html", post=post)
     if flask.request.method == "POST":
         content = flask.request.form["content"]
         cs = flask.request.form["class"]
-        if not content:
-            flask.session["message"] = "VIRHE: Tyhjä postaus"
-            return flask.redirect(f"/edit_post/{post_id}")
+        if not content or len(content) > 1000 or "class" not in flask.request.form:
+            flask.abort(403)
         with database.Database() as db:
             db.execute("UPDATE Posts SET content = ?, class = ? WHERE id = ?", [content, cs, post_id], commit=True)
         return flask.redirect("/")
@@ -118,7 +109,7 @@ def edit_post(post_id):
 @app.route("/delete_post/<int:post_id>")
 @require_login
 def delete_post(post_id):
-    post = database.get_post(post_id)
+    post = database.get_post(post_id=post_id)
     if not post:
         flask.abort(404)
     if post["user_id"] != flask.session["id"]:
@@ -138,14 +129,14 @@ def comments(post_id):
 @app.route("/new_comment/<int:post_id>", methods=["GET", "POST"])
 @require_login
 def new_comment(post_id):
+    if not database.get_post(post_id=post_id):
+        flask.abort(404)
     if flask.request.method == "GET":
-        message = flask.session.pop("message", None)
-        return flask.render_template("new_comment.html", post_id=post_id, message=message)
+        return flask.render_template("new_comment.html", post_id=post_id)
     if flask.request.method == "POST":
         content = flask.request.form["content"]
-        if not content:
-            flask.session["message"] = "VIRHE: Tyhjä kommentti"
-            return flask.redirect(f"/new_comment/{post_id}") 
+        if not content or len(content) > 1000:
+            flask.abort(403)
         user_id = flask.session["id"]
         with database.Database() as db:
             db.execute("INSERT INTO Comments (content, time, user_id, post_id) VALUES (?, datetime('now'), ?, ?)", [content, user_id, post_id], commit=True)
@@ -160,13 +151,11 @@ def edit_domment(comment_id):
     if comment["user_id"] != flask.session["id"]:
         flask.abort(403)
     if flask.request.method == "GET":
-        message = flask.session.pop("message", None)
-        return flask.render_template("edit_comment.html", comment=comment, message=message)
+        return flask.render_template("edit_comment.html", comment=comment)
     if flask.request.method == "POST":
         content = flask.request.form["content"]
-        if not content:
-            flask.session["message"] = "VIRHE: Tyhjä kommentti"
-            return flask.redirect(f"/edit_comment/{comment_id}") 
+        if not content or len(content) > 1000:
+            flask.abort(403)
         with database.Database() as db:
             db.execute("UPDATE Comments SET content = ? WHERE id = ?", [content, comment_id], commit=True)
         return flask.redirect(f"/comments/{comment["post_id"]}")

@@ -17,19 +17,14 @@
       <form action="/edit_post/{{ post.id }}" method="post">
         <p>
           Tee tarvittavat muutokset: <br />
-          <textarea name="content" rows="5" cols="50">{{ post.content }}</textarea>
+          <textarea name="content" rows="5" cols="50" maxlength="1000" required>{{ post.content }}</textarea>
         </p>
         <p>
-          <input type="radio" name="class" value="Shitpost" {{ "checked = \"checked\"" if post.class == "Shitpost" else None}} \> Shitpost
-          <input type="radio" name="class" value="Asiallinen" {{ "checked = \"checked\"" if post.class == "Asiallinen" else None}} \> Asiallinen
+          <input type="radio" name="class" value="Shitpost" {{ "checked" if post.class == "Shitpost" else "" }} required > Shitpost
+          <input type="radio" name="class" value="Asiallinen" {{ "checked" if post.class == "Asiallinen" else "" }} required > Asiallinen
         </p>
         <input type="submit" value="Muokkaa" />
       </form>
-      {% if message %}
-      <p>
-        {{ message }}
-      </p>
-      {% endif %}
     </div>
   </body>
 </html>

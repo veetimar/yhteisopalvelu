@@ -17,15 +17,10 @@
       <form action="/edit_comment/{{ comment.id }}" method="post">
         <p>
           Tee tarvittavat muutokset: <br />
-          <textarea name="content" rows="5" cols="50">{{ comment.content }}</textarea>
+          <textarea name="content" rows="5" cols="50" maxlength="1000" required>{{ comment.content }}</textarea>
         </p>
         <input type="submit" value="Muokkaa" />
       </form>
-      {% if message %}
-      <p>
-        {{ message }}
-      </p>
-      {% endif %}
     </div>
   </body>
 </html>
