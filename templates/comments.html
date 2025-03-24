@@ -17,6 +17,9 @@
       <p>
         {{ post.content }}
       </p>
+      <p>
+        <strong>{{ post.class }}</strong>
+      </p>
       {% if session.username %}
       <p>
         <a href="/new_comment/{{ post.id }}">Kommentoi</a>

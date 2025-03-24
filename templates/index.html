@@ -42,6 +42,9 @@
         {{ post.content }}
       </p>
       <p>
+        <strong>{{ post.class }}</strong>
+      </p>
+      <p>
         <a href="/comments/{{ post.id }}">{{ post.count }} kommenttia</a>
       </p>
       {% if post.username == session.username %}

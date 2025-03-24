@@ -25,6 +25,7 @@ def __create_database():
                CREATE TABLE Posts (
                    id INTEGER PRIMARY KEY,
                    content TEXT NOT NULL,
+                   class TEXT NOT NULL,
                    time TEXT NOT NULL,
                    user_id INTEGER REFERENCES Users ON DELETE CASCADE
                )

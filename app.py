@@ -12,7 +12,7 @@ def index():
         db.execute("INSERT INTO Visits (time) VALUES (datetime('now'))", commit=True)
         visits = db.query("SELECT COUNT(*) FROM Visits", one=True)[0]
         posts = db.query("""
-                         SELECT P.id, P.content, P.time, U.username, COUNT(C.id) count
+                         SELECT P.id, P.content, P.class, P.time, U.username, COUNT(C.id) count
                          FROM Posts P LEFT JOIN Users U ON P.user_id = U.id LEFT JOIN Comments C ON P.id = C.post_id
                          GROUP BY P.id
                          ORDER BY P.time DESC
@@ -83,9 +83,13 @@ def new_post():
         if not content:
             flask.session["message"] = "VIRHE: Tyhjä postaus"
             return flask.redirect("/new_post")
+        if "class" not in flask.request.form:
+            flask.session["message"] = "VIRHE: Luokittelu puuttuu"
+            return flask.redirect("/new_post")
+        cs = flask.request.form["class"]
         user_id = flask.session["id"]
         with Database() as db:
-            db.execute("INSERT INTO Posts (content, time, user_id) VALUES (?, datetime('now'), ?)", [content, user_id], commit=True)
+            db.execute("INSERT INTO Posts (content, class, time, user_id) VALUES (?, ?, datetime('now'), ?)", [content, cs, user_id], commit=True)
         return flask.redirect("/")
 
 @app.route("/edit_post/<int:post_id>", methods=["GET", "POST"])
@@ -123,7 +127,7 @@ def delete_post(post_id):
 @app.route("/comments/<int:post_id>")
 def comments(post_id):
     with Database() as db:
-        post = db.query("SELECT P.id, P.content, P.time, U.username FROM Posts P, Users U WHERE P.user_id = U.id AND P.id = ?", [post_id], one=True)
+        post = db.query("SELECT P.id, P.content, P.class, P.time, U.username FROM Posts P, Users U WHERE P.user_id = U.id AND P.id = ?", [post_id], one=True)
         comments = db.query("SELECT C.id, C.content, C.time, U.username FROM Comments C, Users U WHERE C.user_id = U.id AND C.post_id = ?", [post_id])
     if not post:
         return flask.redirect("/permission_denied")
