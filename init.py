@@ -41,5 +41,7 @@ def __create_database():
                """)
     db.close()
 
-__create_config()
-__create_database()
+
+if __name__ == "__main__":
+    __create_config()
+    __create_database()
