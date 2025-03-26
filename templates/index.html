@@ -38,13 +38,16 @@
         <p>
           Etsi postauksia: <br />
           <input type="text" name="keyword" maxlength="1000" required />
-          <input type="submit" value="Etsi" />
+          <input type="submit" name = "search" value="Etsi" />
         </p>
       </form>
       {% if keyword %}
-      <p>
-        Tulokset haulle "{{ keyword }}":
-      </p>
+      <form action="/" method="post">
+        <p>
+          Tulokset haulle "{{ keyword }}":
+          <input type="submit" name="cancel" value="Peruuta" />
+        </p>
+      </form>
       {% endif %}
       <hr />
       <hr />

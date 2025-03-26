@@ -23,6 +23,8 @@ def index():
         posts = database.get_post()
         return flask.render_template("index.html", visits=visits, posts=posts)
     elif flask.request.method == "POST":
+        if "cancel" in flask.request.form:
+            return flask.redirect("/")
         keyword = flask.request.form["keyword"]
         if not keyword or len(keyword) > 1000:
             flask.abort(403)
@@ -138,6 +140,8 @@ def comments(post_id):
         comments = database.get_comment(post_id=post_id)
         return flask.render_template("comments.html", post=post, comments=comments)
     elif flask.request.method == "POST":
+        if "cancel" in flask.request.form:
+            return flask.redirect(f"/comments/{post_id}")
         keyword = flask.request.form["keyword"]
         if not keyword or len(keyword) > 1000:
             flask.abort(403)
