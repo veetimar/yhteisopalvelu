@@ -34,8 +34,7 @@ def index():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if flask.request.method == "GET":
-        message = flask.session.pop("message", None)
-        return flask.render_template("register.html", message=message)
+        return flask.render_template("register.html")
     elif flask.request.method == "POST":
         username = flask.request.form["username"]
         password1 = flask.request.form["password1"]
@@ -43,23 +42,22 @@ def register():
         if not username or not password1 or not password2 or len(username) > 20 or len(password1) > 20 or len(password2) > 20:
             flask.abort(403)
         if password1 != password2:
-            flask.session["message"] = "VIRHE: Salasanat eivät täsmää"
+            flask.flash("VIRHE: Salasanat eivät täsmää")
             return flask.redirect("/register")
         pwhash = security.generate_password_hash(password1)
         try:
             with database.Database() as db:
                 db.execute("INSERT INTO Users (username, pwhash) VALUES (?, ?)", [username, pwhash], commit=True)
         except:
-            flask.session["message"] = "VIRHE: Käyttäjätunnus on varattu"
+            flask.flash("VIRHE: Käyttäjätunnus on varattu")
             return flask.redirect("/register")
-        flask.session["message"] = "Rekisteröityminen onnistui, kirjaudu sisään"
-        return flask.redirect("/login") 
+        flask.flash("Rekisteröityminen onnistui, kirjaudu sisään")
+        return flask.redirect("/login")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if flask.request.method == "GET":
-        message = flask.session.pop("message", None)
-        return flask.render_template("login.html", message=message)
+        return flask.render_template("login.html")
     elif flask.request.method == "POST":
         username = flask.request.form["username"]
         password = flask.request.form["password"]
@@ -72,7 +70,7 @@ def login():
             flask.session["id"] = user["id"]
             flask.session["username"] = username
             return flask.redirect("/")
-        flask.session["message"] = "VIRHE: Väärä käyttäjätunnus tai salasana"
+        flask.flash("VIRHE: Väärä käyttäjätunnus tai salasana")
         return flask.redirect("/login")
 
 @app.route("/logout")

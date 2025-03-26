@@ -32,11 +32,11 @@
         </p>
         <input type="submit" value="Rekisteröidy" />
       </form>
-      {% if message %}
+      {% for message in get_flashed_messages() %}
       <p>
         {{ message }}
       </p>
-      {% endif %}
+      {% endfor %}
     </div>
   </body>
 </html>
