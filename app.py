@@ -193,8 +193,6 @@ def delete_comment(comment_id):
     if flask.request.method == "GET":
         return flask.render_template("delete_comment.html", comment_id=comment_id)
     elif flask.request.method == "POST":
-        if "yes" not in flask.request.form and "no" not in flask.request.form:
-            flask.abort(403)
         if "yes" in flask.request.form:
             with database.Database() as db:
                 db.execute("DELETE FROM Comments WHERE id = ?", [comment_id], commit=True)
