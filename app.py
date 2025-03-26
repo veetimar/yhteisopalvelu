@@ -14,20 +14,27 @@ def require_login(f):
         return f(*args, **kwargs)
     return wrapper
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def index():
     with database.Database() as db:
         db.execute("INSERT INTO Visits (time) VALUES (datetime('now'))", commit=True)
         visits = db.query("SELECT COUNT(*) FROM Visits", one=True)[0]
-    posts = database.get_post()
-    return flask.render_template("index.html", visits=visits, posts=posts)
+    if flask.request.method == "GET":
+        posts = database.get_post()
+        return flask.render_template("index.html", visits=visits, posts=posts)
+    elif flask.request.method == "POST":
+        keyword = flask.request.form["keyword"]
+        if not keyword or len(keyword) > 1000:
+            flask.abort(403)
+        posts = database.get_post(keyword=keyword)
+        return flask.render_template("index.html", visits=visits, posts=posts, keyword=keyword)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if flask.request.method == "GET":
         message = flask.session.pop("message", None)
         return flask.render_template("register.html", message=message)
-    if flask.request.method == "POST":
+    elif flask.request.method == "POST":
         username = flask.request.form["username"]
         password1 = flask.request.form["password1"]
         password2 = flask.request.form["password2"]
@@ -51,7 +58,7 @@ def login():
     if flask.request.method == "GET":
         message = flask.session.pop("message", None)
         return flask.render_template("login.html", message=message)
-    if flask.request.method == "POST":
+    elif flask.request.method == "POST":
         username = flask.request.form["username"]
         password = flask.request.form["password"]
         if not username or not password or len(username) > 20 or len(password) > 20:
@@ -77,7 +84,7 @@ def logout():
 def new_post():
     if flask.request.method == "GET":
         return flask.render_template("new_post.html")
-    if flask.request.method == "POST":
+    elif flask.request.method == "POST":
         content = flask.request.form["content"]
         if not content or len(content) > 1000 or "class" not in flask.request.form:
             flask.abort(403)
@@ -97,7 +104,7 @@ def edit_post(post_id):
         flask.abort(403)
     if flask.request.method == "GET":
         return flask.render_template("edit_post.html", post=post)
-    if flask.request.method == "POST":
+    elif flask.request.method == "POST":
         content = flask.request.form["content"]
         cs = flask.request.form["class"]
         if not content or len(content) > 1000 or "class" not in flask.request.form:
@@ -116,19 +123,26 @@ def delete_post(post_id):
         flask.abort(403)
     if flask.request.method == "GET":
         return flask.render_template("delete_post.html", post_id=post_id)
-    if flask.request.method == "POST":
+    elif flask.request.method == "POST":
         if "yes" in flask.request.form:
             with database.Database() as db:
                 db.execute("DELETE FROM Posts WHERE id = ?", [post_id], commit=True)
         return flask.redirect("/")
 
-@app.route("/comments/<int:post_id>")
+@app.route("/comments/<int:post_id>", methods=["GET", "POST"])
 def comments(post_id):
     post = database.get_post(post_id)
     if not post:
         flask.abort(404)
-    comments = database.get_comment(post_id=post_id)
-    return flask.render_template("comments.html", post=post, comments=comments)
+    if flask.request.method == "GET":
+        comments = database.get_comment(post_id=post_id)
+        return flask.render_template("comments.html", post=post, comments=comments)
+    elif flask.request.method == "POST":
+        keyword = flask.request.form["keyword"]
+        if not keyword or len(keyword) > 1000:
+            flask.abort(403)
+        comments = database.get_comment(post_id=post_id, keyword=keyword)
+        return flask.render_template("comments.html", post=post, comments=comments, keyword=keyword)
 
 @app.route("/new_comment/<int:post_id>", methods=["GET", "POST"])
 @require_login
@@ -137,7 +151,7 @@ def new_comment(post_id):
         flask.abort(404)
     if flask.request.method == "GET":
         return flask.render_template("new_comment.html", post_id=post_id)
-    if flask.request.method == "POST":
+    elif flask.request.method == "POST":
         content = flask.request.form["content"]
         if not content or len(content) > 1000:
             flask.abort(403)
@@ -156,7 +170,7 @@ def edit_domment(comment_id):
         flask.abort(403)
     if flask.request.method == "GET":
         return flask.render_template("edit_comment.html", comment=comment)
-    if flask.request.method == "POST":
+    elif flask.request.method == "POST":
         content = flask.request.form["content"]
         if not content or len(content) > 1000:
             flask.abort(403)
@@ -174,7 +188,9 @@ def delete_comment(comment_id):
         flask.abort(403)
     if flask.request.method == "GET":
         return flask.render_template("delete_comment.html", comment_id=comment_id)
-    if flask.request.method == "POST":
+    elif flask.request.method == "POST":
+        if "yes" not in flask.request.form and "no" not in flask.request.form:
+            flask.abort(403)
         if "yes" in flask.request.form:
             with database.Database() as db:
                 db.execute("DELETE FROM Comments WHERE id = ?", [comment_id], commit=True)

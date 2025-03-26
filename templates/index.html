@@ -30,9 +30,25 @@
         Kirjaudu sisään postataksesi
       </p>
       {% endif %}
+      <hr />
+      <hr />
     </div>
-    <hr />
-    <hr />
+    <div class="search">
+      <form action="/" method="post">
+        <p>
+          Etsi postauksia: <br />
+          <input type="text" name="keyword" maxlength="1000" required />
+          <input type="submit" value="Etsi" />
+        </p>
+      </form>
+      {% if keyword %}
+      <p>
+        Tulokset haulle "{{ keyword }}":
+      </p>
+      {% endif %}
+      <hr />
+      <hr />
+    </div>
     <div class="posts">
       {% for post in posts %}
       <p>

@@ -20,21 +20,24 @@ class Database:
     def __exit__(self, type, value, traceback):
         self.db.close()
 
-def get_post(post_id=None):
+def get_post(post_id=None, keyword=None):
     args = []
     sql = """SELECT P.id, P.content, P.class, P.time, P.user_id, U.username, COUNT(C.id) count 
-    FROM Posts P LEFT JOIN Users U ON P.user_id = U.id LEFT JOIN Comments C ON P.id = C.post_id"""
+    FROM Posts P LEFT JOIN Comments C ON P.id = C.post_id, Users U WHERE P.user_id = U.id"""
     if post_id:
         args.append(post_id)
-        sql += " WHERE P.id = ?"
+        sql += " AND P.id = ?"
         one = True
     else:
         one = False
+    if keyword:
+        args.append("%" + keyword + "%")
+        sql += " AND P.content LIKE ?"
     sql += " GROUP BY P.id ORDER BY P.time DESC"
     with Database() as db:
         return db.query(sql, args=args, one=one)
 
-def get_comment(post_id=None, comment_id=None):
+def get_comment(post_id=None, comment_id=None, keyword=None):
     args = []
     sql = """SELECT C.id, C.content, C.time, C.user_id, C.post_id, U.username
     FROM Comments C, Users U WHERE C.user_id = U.id"""
@@ -47,6 +50,9 @@ def get_comment(post_id=None, comment_id=None):
         one = True
     else:
         one = False
+    if keyword:
+        args.append("%" + keyword + "%")
+        sql += " AND C.content LIKE ?"
     sql += " ORDER BY C.time"
     with Database() as db:
         return db.query(sql, args=args, one=one)

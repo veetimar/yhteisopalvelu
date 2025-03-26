@@ -32,6 +32,22 @@
       <hr />
       <hr />
     </div>
+    <div class="search">
+      <form action="/comments/{{ post.id }}" method="post">
+        <p>
+          Etsi kommentteja: <br />
+          <input type="text" name="keyword" maxlength="1000" required />
+          <input type="submit" value="Etsi" />
+        </p>
+      </form>
+      {% if keyword %}
+      <p>
+        Tulokset haulle "{{ keyword }}":
+      </p>
+      {% endif %}
+      <hr />
+      <hr />
+    </div>
     <div class="posts">
       {% for comment in comments %}
       <p>
