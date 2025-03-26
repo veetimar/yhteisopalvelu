@@ -96,7 +96,7 @@ def edit_post(post_id):
     if post["user_id"] != flask.session["id"]:
         flask.abort(403)
     if flask.request.method == "GET":
-        return flask.render_template("/edit_post.html", post=post)
+        return flask.render_template("edit_post.html", post=post)
     if flask.request.method == "POST":
         content = flask.request.form["content"]
         cs = flask.request.form["class"]
@@ -106,7 +106,7 @@ def edit_post(post_id):
             db.execute("UPDATE Posts SET content = ?, class = ? WHERE id = ?", [content, cs, post_id], commit=True)
         return flask.redirect("/")
 
-@app.route("/delete_post/<int:post_id>")
+@app.route("/delete_post/<int:post_id>", methods=["GET", "POST"])
 @require_login
 def delete_post(post_id):
     post = database.get_post(post_id=post_id)
@@ -114,9 +114,13 @@ def delete_post(post_id):
         flask.abort(404)
     if post["user_id"] != flask.session["id"]:
         flask.abort(403)
-    with database.Database() as db:
-        db.execute("DELETE FROM Posts WHERE id = ?", [post_id], commit=True)
-    return flask.redirect("/")
+    if flask.request.method == "GET":
+        return flask.render_template("delete_post.html", post_id=post_id)
+    if flask.request.method == "POST":
+        if "yes" in flask.request.form:
+            with database.Database() as db:
+                db.execute("DELETE FROM Posts WHERE id = ?", [post_id], commit=True)
+        return flask.redirect("/")
 
 @app.route("/comments/<int:post_id>")
 def comments(post_id):
@@ -160,7 +164,7 @@ def edit_domment(comment_id):
             db.execute("UPDATE Comments SET content = ? WHERE id = ?", [content, comment_id], commit=True)
         return flask.redirect(f"/comments/{comment["post_id"]}")
 
-@app.route("/delete_comment/<int:comment_id>")
+@app.route("/delete_comment/<int:comment_id>", methods=["GET", "POST"])
 @require_login
 def delete_comment(comment_id):
     comment = database.get_comment(comment_id=comment_id)
@@ -168,6 +172,10 @@ def delete_comment(comment_id):
         flask.abort(404)
     if comment["user_id"] != flask.session["id"]:
         flask.abort(403)
-    with database.Database() as db:
-        db.execute("DELETE FROM Comments WHERE id = ?", [comment_id], commit=True)
+    if flask.request.method == "GET":
+        return flask.render_template("delete_comment.html", comment_id=comment_id)
+    if flask.request.method == "POST":
+        if "yes" in flask.request.form:
+            with database.Database() as db:
+                db.execute("DELETE FROM Comments WHERE id = ?", [comment_id], commit=True)
     return flask.redirect(f"/comments/{comment["post_id"]}")

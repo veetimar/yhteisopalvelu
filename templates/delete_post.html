@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fi">
+  <head>
+    <meta charset="UTF-8">
+    <title>Vahvista</title>
+  </head>
+  <body>
+    <div class="top">
+      <a href="/">Etusivulle</a>
+      <hr />
+      <hr />
+    </div>
+    <div class="confirm">
+      <h2>
+        Vahvista
+      </h2>
+      <form action="/delete_post/{{ post_id }}" method="post">
+        <p>
+          Haluatko varmasti poistaa postauksen?
+        </p>
+        <input type="submit" name="no" value="Ei" />
+        <input type="submit" name="yes" value="Kyllä" />
+      </form>
+    </div>
+  </body>
+</html>
