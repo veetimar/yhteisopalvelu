@@ -58,7 +58,7 @@
         {{ post.time }}, <i>{{ post.username }}</i>:
       </p>
       <p>
-        {{ post.content }}
+        {{ post.content | show_lines }}
       </p>
       <p>
         <strong>{{ post.class }}</strong>

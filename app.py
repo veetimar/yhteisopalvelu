@@ -1,10 +1,16 @@
-import flask, werkzeug.security as security, werkzeug.middleware.proxy_fix as proxy_fix # third party
+import flask, markupsafe, werkzeug.security as security, werkzeug.middleware.proxy_fix as proxy_fix # third party
 import functools # built-in
 import config, database # self-made
 
 app = flask.Flask(__name__)
 app.secret_key = config.SECRET_KEY
 app.wsgi_app = proxy_fix.ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+
+@app.template_filter()
+def show_lines(content):
+    content = str(markupsafe.escape(content))
+    content = content.replace("\n", "<br />")
+    return markupsafe.Markup(content)
 
 def require_login(f):
     @functools.wraps(f)
