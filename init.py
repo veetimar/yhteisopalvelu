@@ -9,12 +9,6 @@ def __create_database():
         os.remove("database.db")
     db = sqlite3.connect("database.db")
     db.execute("""
-               CREATE TABLE Visits (
-                   id INTEGER PRIMARY KEY,
-                   time TEXT NOT NULL
-               )
-               """)
-    db.execute("""
                CREATE TABLE Users (
                    id INTEGER PRIMARY KEY,
                    username TEXT NOT NULL UNIQUE,

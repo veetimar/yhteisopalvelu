@@ -22,12 +22,9 @@ def require_login(f):
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    with database.Database() as db:
-        db.execute("INSERT INTO Visits (time) VALUES (datetime('now'))", commit=True)
-        visits = db.query("SELECT COUNT(*) FROM Visits", one=True)[0]
     if flask.request.method == "GET":
         posts = database.get_post()
-        return flask.render_template("index.html", visits=visits, posts=posts)
+        return flask.render_template("index.html", posts=posts)
     elif flask.request.method == "POST":
         if "cancel" in flask.request.form:
             return flask.redirect("/")
@@ -35,7 +32,7 @@ def index():
         if not keyword or len(keyword) > 1000:
             flask.abort(403)
         posts = database.get_post(keyword=keyword)
-        return flask.render_template("index.html", visits=visits, posts=posts, keyword=keyword)
+        return flask.render_template("index.html", posts=posts, keyword=keyword)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
