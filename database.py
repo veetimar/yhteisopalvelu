@@ -20,16 +20,30 @@ class Database:
     def __exit__(self, type, value, traceback):
         self.db.close()
 
+def get_user(username=None):
+    args = []
+    one = False
+    sql = """SELECT U.id, U.username, U.pwhash,
+    (SELECT COUNT(*) FROM Posts P WHERE P.user_id = U.id) post_count,
+    (SELECT COUNT(*) FROM Comments C WHERE C.user_id = U.id) comment_count
+    FROM Users U"""
+    if username:
+        args.append(username)
+        sql += " WHERE U.username = ?"
+        one = True
+    sql += " GROUP BY U.id ORDER BY U.username"
+    with Database() as db:
+        return db.query(sql, args=args, one=one)
+
 def get_post(post_id=None, keyword=None):
     args = []
+    one = False
     sql = """SELECT P.id, P.content, P.class, P.time, P.user_id, U.username, COUNT(C.id) count 
     FROM Posts P LEFT JOIN Comments C ON P.id = C.post_id, Users U WHERE P.user_id = U.id"""
     if post_id:
         args.append(post_id)
         sql += " AND P.id = ?"
         one = True
-    else:
-        one = False
     if keyword:
         args.append("%" + keyword + "%")
         sql += " AND P.content LIKE ?"
@@ -39,6 +53,7 @@ def get_post(post_id=None, keyword=None):
 
 def get_comment(post_id=None, comment_id=None, keyword=None):
     args = []
+    one = False
     sql = """SELECT C.id, C.content, C.time, C.user_id, C.post_id, U.username
     FROM Comments C, Users U WHERE C.user_id = U.id"""
     if post_id:
@@ -48,8 +63,6 @@ def get_comment(post_id=None, comment_id=None, keyword=None):
         args.append(comment_id)
         sql += " AND C.id = ?"
         one = True
-    else:
-        one = False
     if keyword:
         args.append("%" + keyword + "%")
         sql += " AND C.content LIKE ?"

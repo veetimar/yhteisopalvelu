@@ -66,8 +66,7 @@ def login():
         password = flask.request.form["password"]
         if not username or not password or len(username) > 20 or len(password) > 20:
             flask.abort(403)
-        with database.Database() as db:
-            user = db.query("SELECT id, pwhash FROM Users WHERE username = ?", [username], one=True)
+        user = database.get_user(username=username)
         pwhash = user["pwhash"] if user else None
         if pwhash and security.check_password_hash(pwhash, password):
             flask.session["id"] = user["id"]
@@ -81,6 +80,22 @@ def logout():
     flask.session.pop("id", None)
     flask.session.pop("username", None)
     return flask.redirect("/")
+
+@app.route("/user/<username>")
+def user(username):
+    user = database.get_user(username=username)
+    if not user:
+        flask.abort(404)
+    return flask.render_template("user.html", user=user)
+
+@app.route("/delete_user/<username>")
+@require_login
+def delete_user(username):
+    if flask.session["username"] != username:
+        flask.abort(403)
+    with database.Database() as db:
+        db.execute("DELETE FROM Users WHERE username = ?", [username], commit=True)
+    return flask.redirect("/logout")
 
 @app.route("/new_post", methods=["GET", "POST"])
 @require_login

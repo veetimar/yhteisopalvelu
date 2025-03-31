@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fi">
+  <head>
+    <meta charset="UTF-8">
+    <title>Käyttäjä {{ user.username }}</title>
+  </head>
+  <body>
+    <div class="top">
+      <a href="/">Etusivulle</a>
+      <hr />
+      <hr />
+    </div>
+    <div class="user">
+      <h2>
+        Käyttäjä <i>{{ user.username }}</i>
+      </h2>
+      <p>
+        {{ user.post_count }} postausta
+      </p>
+      <p>
+        {{ user.comment_count }} kommenttia
+      </p>
+      {% if session.username == user.username %}
+      <hr />
+      <h3>Ylläpitopaneeli</h3>
+      <p>
+        <a href="/delete_user/{{ user.username }}">Poista käyttäjä</a>
+      </p>
+      {% endif %}
+    </div>
+  </body>
+</html>

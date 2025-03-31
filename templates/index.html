@@ -11,7 +11,7 @@
       </h2>
       {% if session.username %}
       <p>
-        Tervetuloa <i>{{ session.username }}</i>
+        Tervetuloa <a href="/user/{{ session.username }}">{{ session.username }}</a>
       </p>
       <p>
         <a href="/logout">Kirjaudu ulos</a>
@@ -55,7 +55,7 @@
     <div class="posts">
       {% for post in posts %}
       <p>
-        {{ post.time }}, <i>{{ post.username }}</i>:
+        {{ post.time }}, <a href="/user/{{ post.username }}">{{ post.username }}</a>:
       </p>
       <p>
         {{ post.content | show_lines }}

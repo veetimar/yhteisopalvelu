@@ -11,8 +11,11 @@
       <hr />
     </div>
     <div class = "old">
+      <h2>
+        Postaus {{ post.id }}
+      </h2>
       <p>
-        {{ post.time }}, <i>{{ post.username }}</i>:
+        {{ post.time }}, <a href="/user/{{ post.username }}">{{ post.username }}</a>:
       </p>
       <p>
         {{ post.content | show_lines }}
@@ -54,7 +57,7 @@
     <div class="posts">
       {% for comment in comments %}
       <p>
-        {{ comment.time }}, <i>{{ comment.username }}</i>:
+        {{ comment.time }}, <a href="/user/{{ comment.username }}">{{ comment.username }}</a>:
       </p>
       <p>
         {{ comment.content | show_lines }}
