@@ -20,8 +20,9 @@
           <textarea name="content" rows="5" cols="50" maxlength="1000" required></textarea>
         </p>
         <p>
-          <input type="radio" name="class" value="Shitpost" required \> Shitpost
-          <input type="radio" name="class" value="Asiallinen" required \> Asiallinen
+          {% for class in classes %}
+          <input type="radio" name="class" value="{{ class.id }}" required /> {{ class.name }}
+          {% endfor %}
         </p>
         <input type="submit" value="Julkaise" />
       </form>

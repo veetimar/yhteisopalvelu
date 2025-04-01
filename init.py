@@ -1,4 +1,5 @@
-import sqlite3, os, secrets
+import os, secrets # built-in
+import database # self-made
 
 def __create_config():
     with open("config.py", "w") as file:
@@ -7,33 +8,44 @@ def __create_config():
 def __create_database():
     if os.path.exists("database.db"):
         os.remove("database.db")
-    db = sqlite3.connect("database.db")
-    db.execute("""
-               CREATE TABLE Users (
-                   id INTEGER PRIMARY KEY,
-                   username TEXT NOT NULL UNIQUE,
-                   pwhash TEXT NOT NULL
-               )
-               """)
-    db.execute("""
-               CREATE TABLE Posts (
-                   id INTEGER PRIMARY KEY,
-                   content TEXT NOT NULL,
-                   class TEXT NOT NULL,
-                   time TEXT NOT NULL,
-                   user_id INTEGER NOT NULL REFERENCES Users ON DELETE CASCADE
-               )
-               """)
-    db.execute("""
-               CREATE TABLE Comments (
-                   id INTEGER PRIMARY KEY,
-                   content TEXT NOT NULL,
-                   time TEXT NOT NULL,
-                   user_id INTEGER NOT NULL REFERENCES Users ON DELETE CASCADE,
-                   post_id INTEGER NOT NULL REFERENCES Posts ON DELETE CASCADE
-               )
-               """)
-    db.close()
+    with database.Database() as db:
+        db.execute("""
+                   CREATE TABLE Users (
+                       id INTEGER PRIMARY KEY,
+                       username TEXT NOT NULL UNIQUE,
+                       pwhash TEXT NOT NULL
+                   )
+                   """)
+        db.execute("""
+                   CREATE TABLE Posts (
+                       id INTEGER PRIMARY KEY,
+                       content TEXT NOT NULL,
+                       time TEXT NOT NULL,
+                       class_id INTEGER NOT NULL REFERENCES Classes ON DELETE RESTRICT,
+                       user_id INTEGER NOT NULL REFERENCES Users ON DELETE CASCADE
+                   )
+                   """)
+        db.execute("""
+                   CREATE TABLE Comments (
+                       id INTEGER PRIMARY KEY,
+                       content TEXT NOT NULL,
+                       time TEXT NOT NULL,
+                       user_id INTEGER NOT NULL REFERENCES Users ON DELETE CASCADE,
+                       post_id INTEGER NOT NULL REFERENCES Posts ON DELETE CASCADE
+                   )
+                   """)
+        db.execute("""
+                   CREATE TABLE Classes (
+                       id INTEGER PRIMARY KEY,
+                       name TEXT NOT NULL
+                   )
+                   """)
+        db.execute("""
+                   INSERT INTO Classes (name) VALUES (?)
+                   """, args=["Shitpost"])
+        db.execute("""
+                   INSERT INTO Classes (name) VALUES (?)
+                   """, args=["Asiallinen"], commit=True)
 
 
 if __name__ == "__main__":

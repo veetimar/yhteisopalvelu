@@ -20,8 +20,9 @@
           <textarea name="content" rows="5" cols="50" maxlength="1000" required>{{ post.content }}</textarea>
         </p>
         <p>
-          <input type="radio" name="class" value="Shitpost" {{ "checked" if post.class == "Shitpost" else "" }} required > Shitpost
-          <input type="radio" name="class" value="Asiallinen" {{ "checked" if post.class == "Asiallinen" else "" }} required > Asiallinen
+          {% for class in classes %}
+          <input type="radio" name="class" value="{{ class.id }}" {{ "checked" if post.class == class.name else "" }} required /> {{ class.name }}
+          {% endfor %}
         </p>
         <input type="submit" value="Muokkaa" />
       </form>

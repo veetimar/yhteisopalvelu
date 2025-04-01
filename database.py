@@ -1,4 +1,4 @@
-import sqlite3
+import sqlite3 # built-in
 
 class Database:
     def execute(self, sql, args=[], commit=False):
@@ -20,7 +20,7 @@ class Database:
     def __exit__(self, type, value, traceback):
         self.db.close()
 
-def get_user(username=None):
+def get_users(username=None):
     args = []
     one = False
     sql = """SELECT U.id, U.username, U.pwhash,
@@ -35,11 +35,11 @@ def get_user(username=None):
     with Database() as db:
         return db.query(sql, args=args, one=one)
 
-def get_post(post_id=None, keyword=None):
+def get_posts(post_id=None, keyword=None):
     args = []
     one = False
-    sql = """SELECT P.id, P.content, P.class, P.time, P.user_id, U.username, COUNT(C.id) count 
-    FROM Posts P LEFT JOIN Comments C ON P.id = C.post_id, Users U WHERE P.user_id = U.id"""
+    sql = """SELECT P.id, P.content, CL.name class, P.time, P.user_id, U.username, COUNT(C.id) count 
+    FROM Posts P LEFT JOIN Comments C ON P.id = C.post_id, Users U, Classes CL WHERE P.user_id = U.id AND P.class_id = CL.id"""
     if post_id:
         args.append(post_id)
         sql += " AND P.id = ?"
@@ -51,7 +51,7 @@ def get_post(post_id=None, keyword=None):
     with Database() as db:
         return db.query(sql, args=args, one=one)
 
-def get_comment(post_id=None, comment_id=None, keyword=None):
+def get_comments(post_id=None, comment_id=None, keyword=None):
     args = []
     one = False
     sql = """SELECT C.id, C.content, C.time, C.user_id, C.post_id, U.username
@@ -67,5 +67,17 @@ def get_comment(post_id=None, comment_id=None, keyword=None):
         args.append("%" + keyword + "%")
         sql += " AND C.content LIKE ?"
     sql += " ORDER BY C.time"
+    with Database() as db:
+        return db.query(sql, args=args, one=one)
+
+def get_classes(class_id=None):
+    args = []
+    one = False
+    sql = "SELECT id, name FROM Classes"
+    if class_id:
+        args.append(class_id)
+        sql += " WHERE id = ?"
+        one = True
+    sql += " ORDER BY id"
     with Database() as db:
         return db.query(sql, args=args, one=one)
