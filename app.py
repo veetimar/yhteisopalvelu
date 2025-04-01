@@ -88,14 +88,22 @@ def user(user_id):
         flask.abort(404)
     return flask.render_template("user.html", user=user)
 
-@app.route("/delete_user/<int:user_id>")
+@app.route("/delete_user/<int:user_id>", methods=["GET", "POST"])
 @require_login
 def delete_user(user_id):
-    if flask.session["id"] != user_id:
+    user = database.get_users(user_id=user_id)
+    if not user:
+        flask.abort(404)
+    if user["id"] != flask.session["id"]:
         flask.abort(403)
-    with database.Database() as db:
-        db.execute("DELETE FROM Users WHERE id = ?", [user_id], commit=True)
-    return flask.redirect("/logout")
+    if flask.request.method == "GET":
+        return flask.render_template("delete_user.html", user_id=user_id)
+    elif flask.request.method == "POST":
+        if "yes" in flask.request.form:
+            with database.Database() as db:
+                db.execute("DELETE FROM Users WHERE id = ?", [user_id], commit=True)
+            return flask.redirect("/logout")
+        return flask.redirect(f"/user/{user_id}")
 
 @app.route("/new_post", methods=["GET", "POST"])
 @require_login
