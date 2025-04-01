@@ -213,3 +213,7 @@ def delete_comment(comment_id):
             with database.Database() as db:
                 db.execute("DELETE FROM Comments WHERE id = ?", [comment_id], commit=True)
     return flask.redirect(f"/comments/{comment["post_id"]}")
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
