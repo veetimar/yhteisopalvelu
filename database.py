@@ -20,7 +20,9 @@ class Database:
     def __exit__(self, type, value, traceback):
         self.db.close()
 
-def get_users(username=None):
+def get_users(username=None, user_id=None):
+    if username and user_id:
+        raise ValueError("cannot process both username and user_id")
     args = []
     one = False
     sql = """SELECT U.id, U.username, U.pwhash,
@@ -30,6 +32,10 @@ def get_users(username=None):
     if username:
         args.append(username)
         sql += " WHERE U.username = ?"
+        one = True
+    if user_id:
+        args.append(user_id)
+        sql += " WHERE U.id = ?"
         one = True
     sql += " GROUP BY U.id ORDER BY U.username"
     with Database() as db:

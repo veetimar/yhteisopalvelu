@@ -81,20 +81,20 @@ def logout():
     flask.session.pop("username", None)
     return flask.redirect("/")
 
-@app.route("/user/<username>")
-def user(username):
-    user = database.get_users(username=username)
+@app.route("/user/<int:user_id>")
+def user(user_id):
+    user = database.get_users(user_id=user_id)
     if not user:
         flask.abort(404)
     return flask.render_template("user.html", user=user)
 
-@app.route("/delete_user/<username>")
+@app.route("/delete_user/<int:user_id>")
 @require_login
-def delete_user(username):
-    if flask.session["username"] != username:
+def delete_user(user_id):
+    if flask.session["id"] != user_id:
         flask.abort(403)
     with database.Database() as db:
-        db.execute("DELETE FROM Users WHERE username = ?", [username], commit=True)
+        db.execute("DELETE FROM Users WHERE id = ?", [user_id], commit=True)
     return flask.redirect("/logout")
 
 @app.route("/new_post", methods=["GET", "POST"])

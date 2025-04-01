@@ -15,7 +15,7 @@
         Postaus {{ post.id }}
       </h2>
       <p>
-        {{ post.time }}, <a href="/user/{{ post.username }}">{{ post.username }}</a>:
+        {{ post.time }}, <a href="/user/{{ post.user_id }}">{{ post.username }}</a>:
       </p>
       <p>
         {{ post.content | show_lines }}
@@ -57,7 +57,7 @@
     <div class="posts">
       {% for comment in comments %}
       <p>
-        {{ comment.time }}, <a href="/user/{{ comment.username }}">{{ comment.username }}</a>:
+        {{ comment.time }}, <a href="/user/{{ comment.user_id }}">{{ comment.username }}</a>:
       </p>
       <p>
         {{ comment.content | show_lines }}
