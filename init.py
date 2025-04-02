@@ -40,6 +40,9 @@ def __create_database():
                        name TEXT NOT NULL
                    )
                    """)
+
+def __create_classes():
+    with database.Database() as db:
         db.execute("""
                    INSERT INTO Classes (name) VALUES (?)
                    """, args=["Shitpost"])
@@ -51,3 +54,4 @@ def __create_database():
 if __name__ == "__main__":
     __create_config()
     __create_database()
+    __create_classes()
