@@ -1,5 +1,6 @@
-import os, secrets # built-in
-import database # self-made
+import secrets
+import os
+import database
 
 def __create_config():
     with open("config.py", "w") as file:
@@ -8,7 +9,7 @@ def __create_config():
 def __create_database():
     if os.path.exists("database.db"):
         os.remove("database.db")
-    with database.Database() as db:
+    with database.dbase as db:
         db.execute("""
                    CREATE TABLE Users (
                        id INTEGER PRIMARY KEY,
@@ -42,7 +43,7 @@ def __create_database():
                    """)
 
 def __create_classes():
-    with database.Database() as db:
+    with database.dbase as db:
         db.execute("""
                    INSERT INTO Classes (name) VALUES (?)
                    """, args=["Shitpost"])
