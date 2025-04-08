@@ -11,12 +11,12 @@
 ## Sovelluksen käyttö
 Luo tietokannan taulut ja config-tiedosto
 
-```
+```console
 python init.py
 ```
 
 Käynnistä sovellus
 
-```
+```console
 python app.py
 ```
