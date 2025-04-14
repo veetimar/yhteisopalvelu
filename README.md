@@ -12,11 +12,11 @@
 Luo tietokannan taulut ja config-tiedosto
 
 ```console
-python init.py
+$ python init.py
 ```
 
 Käynnistä sovellus
 
 ```console
-python app.py
+$ python app.py
 ```
