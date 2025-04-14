@@ -1,5 +1,6 @@
 import secrets
 import os
+
 import database
 
 def __create_config():

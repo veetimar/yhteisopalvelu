@@ -1,8 +1,10 @@
 import functools
+
 import flask
 import markupsafe
 from werkzeug import security
 from werkzeug.middleware import proxy_fix
+
 import config
 import database
 
