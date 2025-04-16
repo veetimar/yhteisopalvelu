@@ -50,44 +50,49 @@ def index():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if flask.request.method == "GET":
-        return flask.render_template("register.html")
+        return flask.render_template("register.html", filled={})
     if flask.request.method == "POST":
         username = flask.request.form["username"]
         password1 = flask.request.form["password1"]
         password2 = flask.request.form["password2"]
         if not (username and password1 and password2) or max(len(username), len(password1), len(password2)) > 20:
             flask.abort(403)
+        filled = {"username": username}
         if password1 != password2:
             flask.flash("VIRHE: Salasanat eivät täsmää")
-            return flask.redirect("/register")
+            return flask.render_template("register.html", filled=filled)
         pwhash = security.generate_password_hash(password1)
         try:
             with database.dbase as db:
                 db.execute("INSERT INTO Users (username, pwhash) VALUES (?, ?)", [username, pwhash], commit=True)
         except:
             flask.flash("VIRHE: Käyttäjätunnus on varattu")
-            return flask.redirect("/register")
+            return flask.render_template("register.html", filled=filled)
         flask.flash("Rekisteröityminen onnistui, kirjaudu sisään")
         return flask.redirect("/login")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if flask.request.method == "GET":
-        return flask.render_template("login.html")
+        return flask.render_template("login.html", filled={})
     if flask.request.method == "POST":
         username = flask.request.form["username"]
         password = flask.request.form["password"]
         if not username or not password or len(username) > 20 or len(password) > 20:
             flask.abort(403)
+        filled = {"username": username}
         usr = database.get_users(username=username)
         pwhash = usr["pwhash"] if usr else None
-        if pwhash and security.check_password_hash(pwhash, password):
+        if not pwhash:
+            flask.flash("VIRHE: Käyttäjätunnusta ei löydy")
+            return flask.render_template("login.html", filled=filled)
+        if security.check_password_hash(pwhash, password):
             flask.session["id"] = usr["id"]
             flask.session["username"] = username
             flask.session["csrf_token"] = secrets.token_hex(16)
             return flask.redirect("/")
-        flask.flash("VIRHE: Väärä käyttäjätunnus tai salasana")
-        return flask.redirect("/login")
+        flask.flash("VIRHE: Väärä salasana")
+        return flask.render_template("login.html", filled=filled)
 
 @app.route("/logout")
 def logout():
