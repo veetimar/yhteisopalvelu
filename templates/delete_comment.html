@@ -20,6 +20,7 @@
         </p>
         <input type="submit" name="no" value="Ei" />
         <input type="submit" name="yes" value="Kyllä" />
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
       </form>
     </div>
   </body>
