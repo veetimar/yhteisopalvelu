@@ -14,9 +14,16 @@
       <h2>
         Rekisteröidy
       </h2>
-      <p>
-        Tai <a href="/login">Kirjaudu sisään</a>
-      </p>
+      <form action="/login" method="post">
+        Tai
+        <input type="submit" value="Kirjaudu sisään" />
+        <input type="hidden" name="get" />
+        {% if next_page %}
+        <input type="hidden" name="next_page" value="{{ next_page }}" />
+        {% else %}
+        <input type="hidden" name="next_page" value="/" />
+        {% endif %}
+      </form>
       <form action="/register" method="post">
         <p>
           Käyttäjätunnus: <br />
@@ -31,6 +38,11 @@
           <input type="password" name="password2" maxlength="20" required />
         </p>
         <input type="submit" value="Rekisteröidy" />
+        {% if next_page %}
+        <input type="hidden" name="next_page" value="{{ next_page }}" />
+        {% else %}
+        <input type="hidden" name="next_page" value="/" />
+        {% endif %}
       </form>
       {% for message in get_flashed_messages() %}
       <p>
