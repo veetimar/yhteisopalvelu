@@ -39,8 +39,8 @@
     <div class="search">
       <form action="/comments/{{ post.id }}" method="post">
         <p>
-          Etsi kommentteja: <br />
-          <input type="text" name="keyword" maxlength="1000" required />
+          <label for="keyword">Etsi kommentteja</label>:<br />
+          <input type="text" id="keyword" name="keyword" maxlength="1000" required />
           <input type="submit" value="Etsi" />
         </p>
       </form>

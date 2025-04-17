@@ -17,8 +17,8 @@
       </h2>
       <form action="/new_comment/{{ post_id }}" method="post">
         <p>
-          Mitä mietteitä: <br />
-          <textarea name="content" rows="5" cols="50" maxlength="1000" required></textarea>
+          <label for="content">Mitä mietteitä</label>:<br />
+          <textarea id="content" name="content" rows="5" cols="50" maxlength="1000" required></textarea>
         </p>
         <input type="submit" value="Kommentoi" />
         <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />

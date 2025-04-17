@@ -27,16 +27,16 @@
       </form>
       <form action="/register" method="post">
         <p>
-          Käyttäjätunnus: <br />
-          <input type="text" name="username" maxlength="20" value="{{ filled.username }}" required />
+          <label for="username">Käyttäjätunnus</label>:<br />
+          <input type="text" id="username" name="username" maxlength="20" value="{{ filled.username }}" required />
         </p>
         <p>
-          Salasana: <br />
-          <input type="password" name="password1" maxlength="20" required />
+          <label for="password1">Salasana</label>:<br />
+          <input type="password" id="password1" name="password1" maxlength="20" required />
         </p>
         <p>
-          Salasana uudelleen: <br />
-          <input type="password" name="password2" maxlength="20" required />
+          <label for="password2">Salasana uudelleen</label>:<br />
+          <input type="password" id="password2" name="password2" maxlength="20" required />
         </p>
         <input type="submit" value="Rekisteröidy" />
         {% if next_page %}

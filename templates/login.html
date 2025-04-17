@@ -27,12 +27,12 @@
       </form>
       <form action="/login" method="post">
         <p>
-          Käyttäjätunnus: <br />
-          <input type="text" name="username" maxlength="20" value="{{ filled.username }}" required />
+          <label for="username">Käyttäjätunnus</label>:<br />
+          <input type="text" id="username" name="username" maxlength="20" value="{{ filled.username }}" required />
         </p>
         <p>
-          Salasana: <br />
-          <input type="password" name="password" maxlength="20" required />
+          <label for="password">Salasana</label>:<br />
+          <input type="password" id="password" name="password" maxlength="20" required />
         </p>
         <input type="submit" value="Kirjaudu sisään" />
         {% if next_page %}
