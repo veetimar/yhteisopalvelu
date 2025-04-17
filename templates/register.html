@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <title>Rekisteröidy</title>
+    <link rel="stylesheet" href="static/style.css" />
   </head>
   <body>
     <div class="top">
@@ -16,7 +17,7 @@
       </h2>
       <form action="/login" method="post">
         Tai
-        <input type="submit" value="Kirjaudu sisään" />
+        <input id="get" type="submit" value="Kirjaudu sisään" />
         <input type="hidden" name="get" />
         {% if next_page %}
         <input type="hidden" name="next_page" value="{{ next_page }}" />
