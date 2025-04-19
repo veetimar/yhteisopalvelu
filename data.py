@@ -74,6 +74,11 @@ def new_user(username, pwhash):
     with database.dbase as db:
         return db.execute(sql, args=[username, pwhash])
 
+def change_password(pwhash, user_id):
+    sql = "UPDATE Users SET pwhash = ? WHERE id = ?"
+    with database.dbase as db:
+        return db.execute(sql, args=[pwhash, user_id])
+
 def delete_user(id):
     sql = "DELETE FROM Users WHERE id = ?"
     with database.dbase as db:

@@ -35,12 +35,12 @@ def check_csrf():
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+    posts = data.get_posts()
     if flask.request.method == "GET":
-        posts = data.get_posts()
         return flask.render_template("index.html", posts=posts)
     if flask.request.method == "POST":
         if "cancel" in flask.request.form:
-            return flask.redirect("/")
+            return flask.render_template("index.html", posts=posts)
         keyword = flask.request.form["keyword"]
         if not keyword or len(keyword) > 1000:
             flask.abort(403)
@@ -91,13 +91,13 @@ def login():
         if not pwhash:
             flask.flash("VIRHE: Käyttäjätunnusta ei löydy")
             return flask.render_template("login.html", filled=filled, next_page=next_page)
-        if security.check_password_hash(pwhash, password):
-            flask.session["id"] = usr["id"]
-            flask.session["username"] = username
-            flask.session["csrf_token"] = secrets.token_hex(16)
-            return flask.redirect(next_page)
-        flask.flash("VIRHE: Väärä salasana")
-        return flask.render_template("login.html", filled=filled, next_page=next_page)
+        if not security.check_password_hash(pwhash, password):
+            flask.flash("VIRHE: Väärä salasana")
+            return flask.render_template("login.html", filled=filled, next_page=next_page)
+        flask.session["id"] = usr["id"]
+        flask.session["username"] = username
+        flask.session["csrf_token"] = secrets.token_hex(16)
+        return flask.redirect(next_page)
 
 @app.route("/logout")
 def logout():
@@ -112,6 +112,33 @@ def user(user_id):
     if not usr:
         flask.abort(404)
     return flask.render_template("user.html", user=usr)
+
+@app.route("/change_password/<int:user_id>", methods=["GET", "POST"])
+@require_login
+def change_password(user_id):
+    usr = data.get_users(user_id=user_id)
+    if not usr:
+        flask.abort(404)
+    if usr["id"] != flask.session["id"]:
+        flask.abort(403)
+    if flask.request.method == "GET":
+        return flask.render_template("change_password.html", user=usr)
+    if flask.request.method == "POST":
+        check_csrf()
+        old_password = flask.request.form["old_password"]
+        password1 = flask.request.form["password1"]
+        password2 = flask.request.form["password2"]
+        if not (old_password and password1 and password2) or max(len(old_password), len(password1), len(password2)) > 20:
+            flask.abort(403)
+        if password1 != password2:
+            flask.flash("VIRHE: Salasanat eivät täsmää")
+            return flask.render_template("change_password.html", user=usr)
+        pwhash = usr["pwhash"]
+        if not security.check_password_hash(pwhash, old_password):
+            flask.flash("VIRHE: Väärä salasana")
+            return flask.render_template("change_password.html", user=usr)
+        data.change_password(pwhash, user_id)
+        return flask.redirect(f"/user/{user_id}")
 
 @app.route("/delete_user/<int:user_id>", methods=["GET", "POST"])
 @require_login
@@ -190,15 +217,15 @@ def delete_post(post_id):
 
 @app.route("/comments/<int:post_id>", methods=["GET", "POST"])
 def comments(post_id):
-    post = data.get_posts(post_id)
+    post = data.get_posts(post_id=post_id)
+    cmmnts = data.get_comments(post_id=post_id)
     if not post:
         flask.abort(404)
     if flask.request.method == "GET":
-        cmmnts = data.get_comments(post_id=post_id)
         return flask.render_template("comments.html", post=post, comments=cmmnts)
     if flask.request.method == "POST":
         if "cancel" in flask.request.form:
-            return flask.redirect(f"/comments/{post_id}")
+            return flask.render_template("comments.html", post=post, comments=cmmnts)
         keyword = flask.request.form["keyword"]
         if not keyword or len(keyword) > 1000:
             flask.abort(403)
