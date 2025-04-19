@@ -9,6 +9,12 @@
 - Käyttäjäsivuilta näkee tilastoja käyttäjästä ja voi poistaa käyttäjän
 
 ## Sovelluksen käyttö
+Asenna `flask`-kirjasto
+
+```console
+$ pip install flask
+```
+
 Luo tietokannan taulut ja config-tiedosto
 
 ```console
