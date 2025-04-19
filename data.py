@@ -72,39 +72,39 @@ def get_classes(class_id=None):
 def new_user(username, pwhash):
     sql = "INSERT INTO Users (username, pwhash) VALUES (?, ?)"
     with database.dbase as db:
-        return db.execute(sql, args=[username, pwhash], commit=True)
+        return db.execute(sql, args=[username, pwhash])
 
 def delete_user(id):
     sql = "DELETE FROM Users WHERE id = ?"
     with database.dbase as db:
-        return db.execute(sql, args=[id], commit=True)
+        return db.execute(sql, args=[id])
 
 def new_post(content, cs, user_id):
     sql = "INSERT INTO Posts (content, class_id, time, user_id) VALUES (?, ?, datetime('now'), ?)"
     with database.dbase as db:
-        return db.execute(sql, args=[content, cs, user_id], commit=True)
+        return db.execute(sql, args=[content, cs, user_id])
 
 def edit_post(content, cs, post_id):
     sql = "UPDATE Posts SET content = ?, class_id = ? WHERE id = ?"
     with database.dbase as db:
-        return db.execute(sql, args=[content, cs, post_id], commit=True)
+        return db.execute(sql, args=[content, cs, post_id])
 
 def delete_post(id):
     sql = "DELETE FROM Posts WHERE id = ?"
     with database.dbase as db:
-        return db.execute(sql, args=[id], commit=True)
+        return db.execute(sql, args=[id])
 
 def new_comment(content, user_id, post_id):
     sql = "INSERT INTO Comments (content, time, user_id, post_id) VALUES (?, datetime('now'), ?, ?)"
     with database.dbase as db:
-        return db.execute(sql, args=[content, user_id, post_id], commit=True)
+        return db.execute(sql, args=[content, user_id, post_id])
 
 def edit_comment(content, comment_id):
     sql = "UPDATE Comments SET content = ? WHERE id = ?"
     with database.dbase as db:
-        return db.execute(sql, args=[content, comment_id], commit=True)
+        return db.execute(sql, args=[content, comment_id])
 
 def delete_comment(id):
     sql = "DELETE FROM Comments WHERE id = ?"
     with database.dbase as db:
-        return db.execute(sql, args=[id], commit=True)
+        return db.execute(sql, args=[id])

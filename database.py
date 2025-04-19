@@ -3,13 +3,13 @@ import sqlite3
 class Database:
     def __init__(self):
         self.db = None
+        self.commit = False
 
-    def execute(self, sql, args=[], commit=False):
+    def execute(self, sql, args=[]):
         row_id = self.db.execute(sql, args).lastrowid
-        if commit:
-            self.db.commit()
+        self.commit = True
         return row_id
-    
+
     def executescript(self, file_path):
         with open(file_path) as file:
             self.db.executescript(file.read())
@@ -25,7 +25,9 @@ class Database:
         return self
 
     def __exit__(self, e_type, e_value, e_traceback):
+        if self.commit:
+            self.db.commit()
         self.db.close()
-        self.db = None
+        self.__init__()
 
 dbase = Database()
