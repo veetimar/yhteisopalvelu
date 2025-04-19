@@ -7,7 +7,7 @@ from werkzeug import security
 from werkzeug.middleware import proxy_fix
 
 import config
-import database
+import data
 
 app = flask.Flask(__name__)
 app.secret_key = config.SECRET_KEY
@@ -36,7 +36,7 @@ def check_csrf():
 @app.route("/", methods=["GET", "POST"])
 def index():
     if flask.request.method == "GET":
-        posts = database.get_posts()
+        posts = data.get_posts()
         return flask.render_template("index.html", posts=posts)
     if flask.request.method == "POST":
         if "cancel" in flask.request.form:
@@ -44,7 +44,7 @@ def index():
         keyword = flask.request.form["keyword"]
         if not keyword or len(keyword) > 1000:
             flask.abort(403)
-        posts = database.get_posts(keyword=keyword)
+        posts = data.get_posts(keyword=keyword)
         return flask.render_template("index.html", posts=posts, keyword=keyword)
 
 @app.route("/register", methods=["GET", "POST"])
@@ -66,8 +66,7 @@ def register():
             return flask.render_template("register.html", filled=filled, next_page=next_page)
         pwhash = security.generate_password_hash(password1)
         try:
-            with database.dbase as db:
-                db.execute("INSERT INTO Users (username, pwhash) VALUES (?, ?)", [username, pwhash], commit=True)
+            data.new_user(username, pwhash)
         except:
             flask.flash("VIRHE: Käyttäjätunnus on varattu")
             return flask.render_template("register.html", filled=filled, next_page=next_page)
@@ -87,7 +86,7 @@ def login():
         if not username or not password or len(username) > 20 or len(password) > 20:
             flask.abort(403)
         filled = {"username": username}
-        usr = database.get_users(username=username)
+        usr = data.get_users(username=username)
         pwhash = usr["pwhash"] if usr else None
         if not pwhash:
             flask.flash("VIRHE: Käyttäjätunnusta ei löydy")
@@ -109,7 +108,7 @@ def logout():
 
 @app.route("/user/<int:user_id>")
 def user(user_id):
-    usr = database.get_users(user_id=user_id)
+    usr = data.get_users(user_id=user_id)
     if not usr:
         flask.abort(404)
     return flask.render_template("user.html", user=usr)
@@ -117,7 +116,7 @@ def user(user_id):
 @app.route("/delete_user/<int:user_id>", methods=["GET", "POST"])
 @require_login
 def delete_user(user_id):
-    usr = database.get_users(user_id=user_id)
+    usr = data.get_users(user_id=user_id)
     if not usr:
         flask.abort(404)
     if usr["id"] != flask.session["id"]:
@@ -127,8 +126,7 @@ def delete_user(user_id):
     if flask.request.method == "POST":
         check_csrf()
         if "yes" in flask.request.form:
-            with database.dbase as db:
-                db.execute("DELETE FROM Users WHERE id = ?", [user_id], commit=True)
+            data.delete_user(user_id)
             return flask.redirect("/logout")
         return flask.redirect(f"/user/{user_id}")
 
@@ -136,7 +134,7 @@ def delete_user(user_id):
 @require_login
 def new_post():
     if flask.request.method == "GET":
-        classes = database.get_classes()
+        classes = data.get_classes()
         return flask.render_template("new_post.html", classes=classes)
     if flask.request.method == "POST":
         check_csrf()
@@ -146,8 +144,7 @@ def new_post():
         cs = flask.request.form["class"]
         user_id = flask.session["id"]
         try:
-            with database.dbase as db:
-                db.execute("INSERT INTO Posts (content, class_id, time, user_id) VALUES (?, ?, datetime('now'), ?)", [content, cs, user_id], commit=True)
+            data.new_post(content, cs, user_id)
         except:
             flask.abort(403)
         return flask.redirect("/")
@@ -155,13 +152,13 @@ def new_post():
 @app.route("/edit_post/<int:post_id>", methods=["GET", "POST"])
 @require_login
 def edit_post(post_id):
-    post = database.get_posts(post_id=post_id)
+    post = data.get_posts(post_id=post_id)
     if not post:
         flask.abort(404)
     if post["user_id"] != flask.session["id"]:
         flask.abort(403)
     if flask.request.method == "GET":
-        classes = database.get_classes()
+        classes = data.get_classes()
         return flask.render_template("edit_post.html", post=post, classes=classes)
     if flask.request.method == "POST":
         check_csrf()
@@ -170,8 +167,7 @@ def edit_post(post_id):
             flask.abort(403)
         cs = flask.request.form["class"]
         try:
-            with database.dbase as db:
-                db.execute("UPDATE Posts SET content = ?, class_id = ? WHERE id = ?", [content, cs, post_id], commit=True)
+            data.edit_post(content, cs, post_id)
         except:
             flask.abort(403)
         return flask.redirect("/")
@@ -179,7 +175,7 @@ def edit_post(post_id):
 @app.route("/delete_post/<int:post_id>", methods=["GET", "POST"])
 @require_login
 def delete_post(post_id):
-    post = database.get_posts(post_id=post_id)
+    post = data.get_posts(post_id=post_id)
     if not post:
         flask.abort(404)
     if post["user_id"] != flask.session["id"]:
@@ -189,17 +185,16 @@ def delete_post(post_id):
     if flask.request.method == "POST":
         check_csrf()
         if "yes" in flask.request.form:
-            with database.dbase as db:
-                db.execute("DELETE FROM Posts WHERE id = ?", [post_id], commit=True)
+            data.delete_post(post_id)
         return flask.redirect("/")
 
 @app.route("/comments/<int:post_id>", methods=["GET", "POST"])
 def comments(post_id):
-    post = database.get_posts(post_id)
+    post = data.get_posts(post_id)
     if not post:
         flask.abort(404)
     if flask.request.method == "GET":
-        cmmnts = database.get_comments(post_id=post_id)
+        cmmnts = data.get_comments(post_id=post_id)
         return flask.render_template("comments.html", post=post, comments=cmmnts)
     if flask.request.method == "POST":
         if "cancel" in flask.request.form:
@@ -207,13 +202,13 @@ def comments(post_id):
         keyword = flask.request.form["keyword"]
         if not keyword or len(keyword) > 1000:
             flask.abort(403)
-        cmmnts = database.get_comments(post_id=post_id, keyword=keyword)
+        cmmnts = data.get_comments(post_id=post_id, keyword=keyword)
         return flask.render_template("comments.html", post=post, comments=cmmnts, keyword=keyword)
 
 @app.route("/new_comment/<int:post_id>", methods=["GET", "POST"])
 @require_login
 def new_comment(post_id):
-    if not database.get_posts(post_id=post_id):
+    if not data.get_posts(post_id=post_id):
         flask.abort(404)
     if flask.request.method == "GET":
         return flask.render_template("new_comment.html", post_id=post_id)
@@ -223,14 +218,13 @@ def new_comment(post_id):
         if not content or len(content) > 1000:
             flask.abort(403)
         user_id = flask.session["id"]
-        with database.dbase as db:
-            db.execute("INSERT INTO Comments (content, time, user_id, post_id) VALUES (?, datetime('now'), ?, ?)", [content, user_id, post_id], commit=True)
+        data.new_comment(content, user_id, post_id)
         return flask.redirect(f"/comments/{post_id}")
 
 @app.route("/edit_comment/<int:comment_id>", methods=["GET", "POST"])
 @require_login
 def edit_domment(comment_id):
-    comment = database.get_comments(comment_id=comment_id)
+    comment = data.get_comments(comment_id=comment_id)
     if not comment:
         flask.abort(404)
     if comment["user_id"] != flask.session["id"]:
@@ -242,14 +236,13 @@ def edit_domment(comment_id):
         content = flask.request.form["content"]
         if not content or len(content) > 1000:
             flask.abort(403)
-        with database.dbase as db:
-            db.execute("UPDATE Comments SET content = ? WHERE id = ?", [content, comment_id], commit=True)
+        data.edit_comment(content, comment_id)
         return flask.redirect(f"/comments/{comment["post_id"]}")
 
 @app.route("/delete_comment/<int:comment_id>", methods=["GET", "POST"])
 @require_login
 def delete_comment(comment_id):
-    comment = database.get_comments(comment_id=comment_id)
+    comment = data.get_comments(comment_id=comment_id)
     if not comment:
         flask.abort(404)
     if comment["user_id"] != flask.session["id"]:
@@ -259,8 +252,7 @@ def delete_comment(comment_id):
     if flask.request.method == "POST":
         check_csrf()
         if "yes" in flask.request.form:
-            with database.dbase as db:
-                db.execute("DELETE FROM Comments WHERE id = ?", [comment_id], commit=True)
+            data.delete_comment(comment_id)
     return flask.redirect(f"/comments/{comment["post_id"]}")
 
 
