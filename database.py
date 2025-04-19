@@ -9,6 +9,10 @@ class Database:
         if commit:
             self.db.commit()
         return row_id
+    
+    def executescript(self, file_path):
+        with open(file_path) as file:
+            self.db.executescript(file.read())
 
     def query(self, sql, args=[], one=False):
         cursor = self.db.execute(sql, args)
