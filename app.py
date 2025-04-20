@@ -133,10 +133,13 @@ def change_password(user_id):
         if password1 != password2:
             flask.flash("VIRHE: Salasanat eivät täsmää")
             return flask.render_template("change_password.html", user=usr)
-        pwhash = usr["pwhash"]
-        if not security.check_password_hash(pwhash, old_password):
+        if old_password == password1:
+            flask.flash("VIRHE: Salasana on sama kuin aiemmin")
+            return flask.render_template("change_password.html", user=usr)
+        if not security.check_password_hash(usr["pwhash"], old_password):
             flask.flash("VIRHE: Väärä salasana")
             return flask.render_template("change_password.html", user=usr)
+        pwhash = security.generate_password_hash(password1)
         data.change_password(pwhash, user_id)
         return flask.redirect(f"/user/{user_id}")
 
