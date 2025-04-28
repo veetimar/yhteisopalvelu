@@ -117,16 +117,12 @@ def user(user_id):
         flask.abort(404)
     return flask.render_template("user.html", user=usr)
 
-@app.route("/add_image/<int:user_id>", methods=["GET", "POST"])
+@app.route("/add_image", methods=["GET", "POST"])
 @require_login
-def add_image(user_id):
-    usr = data.get_users(user_id=user_id)
-    if not usr:
-        flask.abort(404)
-    if usr["id"] != flask.session["id"]:
-        flask.abort(403)
+def add_image():
+    user_id = flask.session["id"]
     if flask.request.method == "GET":
-        return flask.render_template("add_image.html", user_id=user_id)
+        return flask.render_template("add_image.html")
     if flask.request.method == "POST":
         check_csrf()
         file = flask.request.files["image"]
@@ -138,7 +134,7 @@ def add_image(user_id):
         image = file.read()
         if len(image) > 1000 * 1024:
             flask.flash("VIRHE: Liian suuri kuva")
-            return flask.render_template("add_image.html", user_id=user_id)
+            return flask.render_template("add_image.html")
         data.add_image(image, user_id)
         return flask.redirect(f"/user/{user_id}")
 
@@ -151,16 +147,11 @@ def show_image(user_id):
     response.headers.set("Content-Type", "image/jpeg")
     return response
 
-@app.route("/change_password/<int:user_id>", methods=["GET", "POST"])
+@app.route("/change_password", methods=["GET", "POST"])
 @require_login
-def change_password(user_id):
-    usr = data.get_users(user_id=user_id)
-    if not usr:
-        flask.abort(404)
-    if usr["id"] != flask.session["id"]:
-        flask.abort(403)
+def change_password():
     if flask.request.method == "GET":
-        return flask.render_template("change_password.html", user=usr)
+        return flask.render_template("change_password.html")
     if flask.request.method == "POST":
         check_csrf()
         old_password = flask.request.form["old_password"]
@@ -170,29 +161,27 @@ def change_password(user_id):
             flask.abort(403)
         if password1 != password2:
             flask.flash("VIRHE: Salasanat eivät täsmää")
-            return flask.render_template("change_password.html", user=usr)
+            return flask.render_template("change_password.html")
         if old_password == password1:
             flask.flash("VIRHE: Salasana on sama kuin aiemmin")
-            return flask.render_template("change_password.html", user=usr)
+            return flask.render_template("change_password.html")
+        user_id = flask.session["id"]
+        usr = data.get_users(user_id=user_id)
         if not security.check_password_hash(usr["pwhash"], old_password):
             flask.flash("VIRHE: Väärä salasana")
-            return flask.render_template("change_password.html", user=usr)
+            return flask.render_template("change_password.html")
         pwhash = security.generate_password_hash(password1)
         data.change_password(pwhash, user_id)
         return flask.redirect(f"/user/{user_id}")
 
-@app.route("/delete_user/<int:user_id>", methods=["GET", "POST"])
+@app.route("/delete_user", methods=["GET", "POST"])
 @require_login
-def delete_user(user_id):
-    usr = data.get_users(user_id=user_id)
-    if not usr:
-        flask.abort(404)
-    if usr["id"] != flask.session["id"]:
-        flask.abort(403)
+def delete_user():
     if flask.request.method == "GET":
-        return flask.render_template("delete_user.html", user_id=user_id)
+        return flask.render_template("delete_user.html")
     if flask.request.method == "POST":
         check_csrf()
+        user_id = flask.session["id"]
         if "yes" in flask.request.form:
             data.delete_user(user_id)
             return flask.redirect("/logout")
@@ -276,7 +265,8 @@ def comments(post_id):
 @app.route("/new_comment/<int:post_id>", methods=["GET", "POST"])
 @require_login
 def new_comment(post_id):
-    if not data.get_posts(post_id=post_id):
+    post = data.get_posts(post_id=post_id)
+    if not post:
         flask.abort(404)
     if flask.request.method == "GET":
         return flask.render_template("new_comment.html", post_id=post_id)

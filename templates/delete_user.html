@@ -15,9 +15,9 @@
       <h2>
         Vahvista
       </h2>
-      <form action="/delete_user/{{ user_id }}" method="post">
+      <form action="/delete_user" method="post">
         <p>
-          Haluatko varmasti poistaa käyttäjän?
+          Haluatko varmasti poistaa käyttäjän <i>{{ session.username}}</i>?
         </p>
         <input type="submit" name="no" value="Ei" />
         <input type="submit" name="yes" value="Kyllä" />
