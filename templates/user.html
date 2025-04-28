@@ -17,7 +17,7 @@
       </h2>
       <p>
         {% if user.has_image %}
-        <img src="/show_image/{{ user.id }}" alt="profiilikuva">
+        <img id="image" src="/show_image/{{ user.id }}" alt="profiilikuva" />
         {% else %}
         <i>Ei profiilikuvaa</i>
         {% endif %}
