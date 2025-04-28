@@ -33,6 +33,11 @@ def check_csrf():
     if flask.request.form["csrf_token"] != flask.session["csrf_token"]:
         flask.abort(403)
 
+def create_session(id, username):
+    flask.session["id"] = id
+    flask.session["username"] = username
+    flask.session["csrf_token"] = secrets.token_hex(16)
+
 @app.route("/", methods=["GET", "POST"])
 def index():
     posts = data.get_posts()
@@ -66,12 +71,12 @@ def register():
             return flask.render_template("register.html", filled=filled, next_page=next_page)
         pwhash = security.generate_password_hash(password1)
         try:
-            data.new_user(username, pwhash)
+            id = data.new_user(username, pwhash)
         except:
             flask.flash("VIRHE: Käyttäjätunnus on varattu")
             return flask.render_template("register.html", filled=filled, next_page=next_page)
-        flask.flash("Rekisteröityminen onnistui, kirjaudu sisään")
-        return flask.render_template("login.html", filled={}, next_page=next_page)
+        create_session(id, username)
+        return flask.redirect(next_page)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -94,9 +99,7 @@ def login():
         if not security.check_password_hash(pwhash, password):
             flask.flash("VIRHE: Väärä salasana")
             return flask.render_template("login.html", filled=filled, next_page=next_page)
-        flask.session["id"] = usr["id"]
-        flask.session["username"] = username
-        flask.session["csrf_token"] = secrets.token_hex(16)
+        create_session(usr["id"], username)
         return flask.redirect(next_page)
 
 @app.route("/logout")
