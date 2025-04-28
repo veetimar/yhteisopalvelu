@@ -1,7 +1,8 @@
 CREATE TABLE Users (
     id INTEGER PRIMARY KEY,
     username TEXT NOT NULL UNIQUE,
-    pwhash TEXT NOT NULL
+    pwhash TEXT NOT NULL,
+    image BLOB
 );
 CREATE TABLE Posts (
     id INTEGER PRIMARY KEY,

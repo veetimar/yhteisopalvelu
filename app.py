@@ -33,8 +33,8 @@ def check_csrf():
     if flask.request.form["csrf_token"] != flask.session["csrf_token"]:
         flask.abort(403)
 
-def create_session(id, username):
-    flask.session["id"] = id
+def create_session(user_id, username):
+    flask.session["id"] = user_id
     flask.session["username"] = username
     flask.session["csrf_token"] = secrets.token_hex(16)
 
@@ -71,11 +71,11 @@ def register():
             return flask.render_template("register.html", filled=filled, next_page=next_page)
         pwhash = security.generate_password_hash(password1)
         try:
-            id = data.new_user(username, pwhash)
+            user_id = data.new_user(username, pwhash)
         except:
             flask.flash("VIRHE: Käyttäjätunnus on varattu")
             return flask.render_template("register.html", filled=filled, next_page=next_page)
-        create_session(id, username)
+        create_session(user_id, username)
         return flask.redirect(next_page)
 
 @app.route("/login", methods=["GET", "POST"])
@@ -115,6 +115,40 @@ def user(user_id):
     if not usr:
         flask.abort(404)
     return flask.render_template("user.html", user=usr)
+
+@app.route("/add_image/<int:user_id>", methods=["GET", "POST"])
+@require_login
+def add_image(user_id):
+    usr = data.get_users(user_id=user_id)
+    if not usr:
+        flask.abort(404)
+    if usr["id"] != flask.session["id"]:
+        flask.abort(403)
+    if flask.request.method == "GET":
+        return flask.render_template("add_image.html", user_id=user_id)
+    if flask.request.method == "POST":
+        check_csrf()
+        file = flask.request.files["image"]
+        if not file:
+            data.add_image(None, user_id)
+            return flask.redirect(f"/user/{user_id}")
+        if not file.filename.endswith(".jpg"):
+            flask.abort(403)
+        image = file.read()
+        if len(image) > 1000 * 1024:
+            flask.flash("VIRHE: Liian suuri kuva")
+            return flask.render_template("add_image.html", user_id=user_id)
+        data.add_image(image, user_id)
+        return flask.redirect(f"/user/{user_id}")
+
+@app.route("/show_image/<int:user_id>")
+def show_image(user_id):
+    image = data.get_image(user_id)
+    if not image:
+        flask.abort(404)
+    response = flask.make_response(image)
+    response.headers.set("Content-Type", "image/jpeg")
+    return response
 
 @app.route("/change_password/<int:user_id>", methods=["GET", "POST"])
 @require_login

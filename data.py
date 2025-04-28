@@ -7,19 +7,25 @@ def get_users(username=None, user_id=None):
     one = False
     sql = """SELECT U.id, U.username, U.pwhash,
     (SELECT COUNT(*) FROM Posts P WHERE P.user_id = U.id) post_count,
-    (SELECT COUNT(*) FROM Comments C WHERE C.user_id = U.id) comment_count
+    (SELECT COUNT(*) FROM Comments C WHERE C.user_id = U.id) comment_count,
+    image IS NOT NULL has_image
     FROM Users U"""
     if username:
         args.append(username)
         sql += " WHERE U.username = ?"
         one = True
-    if user_id:
+    elif user_id:
         args.append(user_id)
         sql += " WHERE U.id = ?"
         one = True
     sql += " GROUP BY U.id ORDER BY U.username"
     with database.dbase as db:
         return db.query(sql, args=args, one=one)
+
+def get_image(user_id):
+    sql = "SELECT image FROM Users WHERE id = ?"
+    with database.dbase as db:
+        return db.query(sql, args=[user_id], one=True)[0]
 
 def get_posts(post_id=None, keyword=None):
     args = []
@@ -74,15 +80,20 @@ def new_user(username, pwhash):
     with database.dbase as db:
         return db.execute(sql, args=[username, pwhash])
 
+def add_image(image, user_id):
+    sql = "UPDATE Users SET image = ? WHERE id = ?"
+    with database.dbase as db:
+        return db.execute(sql, args=[image, user_id])
+
 def change_password(pwhash, user_id):
     sql = "UPDATE Users SET pwhash = ? WHERE id = ?"
     with database.dbase as db:
         return db.execute(sql, args=[pwhash, user_id])
 
-def delete_user(id):
+def delete_user(user_id):
     sql = "DELETE FROM Users WHERE id = ?"
     with database.dbase as db:
-        return db.execute(sql, args=[id])
+        return db.execute(sql, args=[user_id])
 
 def new_post(content, cs, user_id):
     sql = "INSERT INTO Posts (content, class_id, time, user_id) VALUES (?, ?, datetime('now'), ?)"
@@ -94,10 +105,10 @@ def edit_post(content, cs, post_id):
     with database.dbase as db:
         return db.execute(sql, args=[content, cs, post_id])
 
-def delete_post(id):
+def delete_post(post_id):
     sql = "DELETE FROM Posts WHERE id = ?"
     with database.dbase as db:
-        return db.execute(sql, args=[id])
+        return db.execute(sql, args=[post_id])
 
 def new_comment(content, user_id, post_id):
     sql = "INSERT INTO Comments (content, time, user_id, post_id) VALUES (?, datetime('now'), ?, ?)"
@@ -109,7 +120,7 @@ def edit_comment(content, comment_id):
     with database.dbase as db:
         return db.execute(sql, args=[content, comment_id])
 
-def delete_comment(id):
+def delete_comment(comment_id):
     sql = "DELETE FROM Comments WHERE id = ?"
     with database.dbase as db:
-        return db.execute(sql, args=[id])
+        return db.execute(sql, args=[comment_id])

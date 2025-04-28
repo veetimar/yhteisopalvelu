@@ -16,6 +16,13 @@
         Käyttäjä <i>{{ user.username }}</i>
       </h2>
       <p>
+        {% if user.has_image %}
+        <img src="/show_image/{{ user.id }}" alt="profiilikuva">
+        {% else %}
+        <i>Ei profiilikuvaa</i>
+        {% endif %}
+      </p>
+      <p>
         {{ user.post_count }} postausta
       </p>
       <p>
@@ -24,6 +31,9 @@
       {% if session.username == user.username %}
       <hr />
       <h3>Ylläpitopaneeli</h3>
+      <p>
+        <a href="/add_image/{{ user.id }}">Lisää/vaihda/poista profiilikuva</a>
+      </p>
       <p>
         <a href="/change_password/{{ user.id }}">Vaihda salasana</a>
       </p>

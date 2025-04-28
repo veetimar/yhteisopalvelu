@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fi">
+  <head>
+    <meta charset="UTF-8">
+    <title>Lisää kuva</title>
+    <link rel="stylesheet" href="static/style.css" />
+  </head>
+  <body>
+    <div class="top">
+      <a href="/">Etusivulle</a>
+      <hr />
+      <hr />
+    </div>
+    <div class="image">
+      <h2>
+        Lisää kuva
+      </h2>
+      <form action="/add_image/{{ user_id }}" method="post" enctype="multipart/form-data">
+        <p>
+            <label for="image">Kuva (jätä tyhjäksi poistaaksesi vanhan kuvan)</label>:<br />
+            <input type="file" id="image" name="image" accept=".jpg" />
+        </p>
+        <input type="submit" value="Lähetä" />
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+      </form>
+      {% for message in get_flashed_messages() %}
+      <p>
+        {{ message }}
+      </p>
+      {% endfor %}
+    </div>
+  </body>
+</html>
