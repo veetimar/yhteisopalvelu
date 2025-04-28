@@ -1,5 +1,6 @@
 import functools
 import secrets
+import sqlite3
 
 import flask
 import markupsafe
@@ -72,7 +73,7 @@ def register():
         pwhash = security.generate_password_hash(password1)
         try:
             user_id = data.new_user(username, pwhash)
-        except:
+        except sqlite3.IntegrityError:
             flask.flash("VIRHE: Käyttäjätunnus on varattu")
             return flask.render_template("register.html", filled=filled, next_page=next_page)
         create_session(user_id, username)
@@ -212,7 +213,7 @@ def new_post():
         user_id = flask.session["id"]
         try:
             data.new_post(content, cs, user_id)
-        except:
+        except sqlite3.IntegrityError:
             flask.abort(403)
         return flask.redirect("/")
 
@@ -235,7 +236,7 @@ def edit_post(post_id):
         cs = flask.request.form["class"]
         try:
             data.edit_post(content, cs, post_id)
-        except:
+        except sqlite3.IntegrityError:
             flask.abort(403)
         return flask.redirect("/")
 
