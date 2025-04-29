@@ -38,7 +38,7 @@
       <form action="/" method="post">
         <p>
           <label for="keyword">Etsi postauksia</label>:<br />
-          <input type="text" if="keyword" name="keyword" maxlength="1000" required />
+          <input type="text" id="keyword" name="keyword" maxlength="1000" required />
           <input type="submit" name = "search" value="Etsi" />
         </p>
       </form>
@@ -55,7 +55,7 @@
     </div>
     <div class="posts">
       {% for post in posts %}
-      <p>
+      <p id="{{ post.id }}">
         {{ post.time }}, <a href="/user/{{ post.user_id }}">{{ post.username }}</a>:
       </p>
       <p>
