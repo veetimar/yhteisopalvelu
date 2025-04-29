@@ -41,7 +41,8 @@ def get_posts(post_id=None, keyword=None, page=None):
         one = True
     if keyword:
         args.append(f"%{keyword}%")
-        sql += " AND P.content LIKE ?"
+        args.append(f"%{keyword}%")
+        sql += " AND (P.content LIKE ? or U.username LIKE ?)"
     sql += " GROUP BY P.id ORDER BY P.time DESC"
     if page:
         args.append(page["size"])
@@ -54,8 +55,10 @@ def get_post_pages(page_size, keyword=None):
     args = []
     sql = "SELECT COUNT(P.id) FROM Posts P"
     if keyword:
+        sql += """, Users U
+        WHERE P.user_id = U.id AND (P.content LIKE ? OR U.username LIKE ?)"""
         args.append(f"%{keyword}%")
-        sql += " WHERE P.content LIKE ?"
+        args.append(f"%{keyword}%")
     with database.dbase as db:
         post_count = db.query(sql, args=args, one=True)[0]
     return math.ceil(post_count / page_size)
@@ -74,7 +77,8 @@ def get_comments(post_id=None, comment_id=None, keyword=None, page=None):
         one = True
     if keyword:
         args.append(f"%{keyword}%")
-        sql += " AND C.content LIKE ?"
+        args.append(f"%{keyword}%")
+        sql += " AND (C.content LIKE ? OR U.username LIKE ?)"
     sql += " ORDER BY C.time"
     if page:
         args.append(page["size"])
@@ -85,10 +89,13 @@ def get_comments(post_id=None, comment_id=None, keyword=None, page=None):
 
 def get_comment_pages(post_id, page_size, keyword=None):
     args = [post_id]
-    sql = "SELECT COUNT(C.id) FROM Comments C WHERE C.post_id = ?"
-    if keyword:
+    if not keyword:
+        sql = "SELECT COUNT(C.id) FROM Comments C WHERE C.post_id = ?"
+    else:
+        sql = """SELECT COUNT(C.id) FROM Comments C, Users U
+        WHERE C.post_id = ? AND C.user_id = U.id AND (C.content LIKE ? OR U.username LIKE ?)"""
         args.append(f"%{keyword}%")
-        sql += " AND C.content LIKE ?"
+        args.append(f"%{keyword}%")
     with database.dbase as db:
         post_count = db.query(sql, args=args, one=True)[0]
     return math.ceil(post_count / page_size)
