@@ -13,6 +13,7 @@ import data
 app = flask.Flask(__name__)
 app.secret_key = config.SECRET_KEY
 app.wsgi_app = proxy_fix.ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+PAGE_SIZE = 10
 
 @app.template_filter()
 def show_lines(content):
@@ -40,18 +41,22 @@ def create_session(user_id, username):
     flask.session["csrf_token"] = secrets.token_hex(16)
 
 @app.route("/", methods=["GET", "POST"])
-def index():
-    posts = data.get_posts()
+@app.route("/<int:page>", methods=["GET", "POST"])
+def index(page=1):
+    keyword = flask.request.form["keyword"] if "keyword" in flask.request.form else None
+    page_count = data.get_post_pages(PAGE_SIZE, keyword=keyword)
+    if page < 1 or page > page_count:
+        flask.abort(404)
+    page = {"page": page, "size": PAGE_SIZE, "count": page_count}
+    posts = data.get_posts(keyword=keyword, page=page)
     if flask.request.method == "GET":
-        return flask.render_template("index.html", posts=posts)
+        return flask.render_template("index.html", posts=posts, page=page)
     if flask.request.method == "POST":
         if "cancel" in flask.request.form:
-            return flask.render_template("index.html", posts=posts)
-        keyword = flask.request.form["keyword"]
-        if not keyword or len(keyword) > 1000:
+            return flask.render_template("index.html", posts=posts, page=page)
+        if keyword is not None and (len(keyword) == 0 or len(keyword) > 1000):
             flask.abort(403)
-        posts = data.get_posts(keyword=keyword)
-        return flask.render_template("index.html", posts=posts, keyword=keyword)
+        return flask.render_template("index.html", posts=posts, page=page, keyword=keyword)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -246,21 +251,25 @@ def delete_post(post_id):
         return flask.redirect("/")
 
 @app.route("/comments/<int:post_id>", methods=["GET", "POST"])
-def comments(post_id):
+@app.route("/comments/<int:post_id>/<int:page>", methods=["GET", "POST"])
+def comments(post_id, page=1):
     post = data.get_posts(post_id=post_id)
-    cmmnts = data.get_comments(post_id=post_id)
     if not post:
         flask.abort(404)
+    keyword = flask.request.form["keyword"] if "keyword" in flask.request.form else None
+    page_count = data.get_comment_pages(post_id, PAGE_SIZE, keyword=keyword)
+    if page < 1 or page > page_count:
+        flask.abort(404)
+    page = {"page": page, "size": PAGE_SIZE, "count": page_count}
+    cmmnts = data.get_comments(post_id=post_id, keyword=keyword, page=page)
     if flask.request.method == "GET":
-        return flask.render_template("comments.html", post=post, comments=cmmnts)
+        return flask.render_template("comments.html", post=post, comments=cmmnts, page=page)
     if flask.request.method == "POST":
         if "cancel" in flask.request.form:
-            return flask.render_template("comments.html", post=post, comments=cmmnts)
-        keyword = flask.request.form["keyword"]
-        if not keyword or len(keyword) > 1000:
+            return flask.render_template("comments.html", post=post, comments=cmmnts, page=page)
+        if keyword is not None and (len(keyword) == 0 or len(keyword) > 1000):
             flask.abort(403)
-        cmmnts = data.get_comments(post_id=post_id, keyword=keyword)
-        return flask.render_template("comments.html", post=post, comments=cmmnts, keyword=keyword)
+        return flask.render_template("comments.html", post=post, comments=cmmnts, page=page, keyword=keyword)
 
 @app.route("/new_comment/<int:post_id>", methods=["GET", "POST"])
 @require_login

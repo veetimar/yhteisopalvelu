@@ -1,3 +1,5 @@
+import math
+
 import database
 
 def get_users(username=None, user_id=None):
@@ -27,7 +29,7 @@ def get_image(user_id):
     with database.dbase as db:
         return db.query(sql, args=[user_id], one=True)[0]
 
-def get_posts(post_id=None, keyword=None):
+def get_posts(post_id=None, keyword=None, page=None):
     args = []
     one = False
     sql = """SELECT P.id, P.content, CL.name class, P.time, P.user_id, U.username, COUNT(C.id) count
@@ -38,13 +40,27 @@ def get_posts(post_id=None, keyword=None):
         sql += " AND P.id = ?"
         one = True
     if keyword:
-        args.append("%" + keyword + "%")
+        args.append(f"%{keyword}%")
         sql += " AND P.content LIKE ?"
     sql += " GROUP BY P.id ORDER BY P.time DESC"
+    if page:
+        args.append(page["size"])
+        args.append((page["page"] - 1) * page["size"])
+        sql += f" LIMIT ? OFFSET ?"
     with database.dbase as db:
         return db.query(sql, args=args, one=one)
 
-def get_comments(post_id=None, comment_id=None, keyword=None):
+def get_post_pages(page_size, keyword=None):
+    args = []
+    sql = "SELECT COUNT(P.id) FROM Posts P"
+    if keyword:
+        args.append(f"%{keyword}%")
+        sql += " WHERE P.content LIKE ?"
+    with database.dbase as db:
+        post_count = db.query(sql, args=args, one=True)[0]
+    return math.ceil(post_count / page_size)
+
+def get_comments(post_id=None, comment_id=None, keyword=None, page=None):
     args = []
     one = False
     sql = """SELECT C.id, C.content, C.time, C.user_id, C.post_id, U.username
@@ -57,11 +73,25 @@ def get_comments(post_id=None, comment_id=None, keyword=None):
         sql += " AND C.id = ?"
         one = True
     if keyword:
-        args.append("%" + keyword + "%")
+        args.append(f"%{keyword}%")
         sql += " AND C.content LIKE ?"
     sql += " ORDER BY C.time"
+    if page:
+        args.append(page["size"])
+        args.append((page["page"] - 1) * page["size"])
+        sql += f" LIMIT ? OFFSET ?"
     with database.dbase as db:
         return db.query(sql, args=args, one=one)
+
+def get_comment_pages(post_id, page_size, keyword=None):
+    args = [post_id]
+    sql = "SELECT COUNT(C.id) FROM Comments C WHERE C.post_id = ?"
+    if keyword:
+        args.append(f"%{keyword}%")
+        sql += " AND C.content LIKE ?"
+    with database.dbase as db:
+        post_count = db.query(sql, args=args, one=True)[0]
+    return math.ceil(post_count / page_size)
 
 def get_classes(class_id=None):
     args = []

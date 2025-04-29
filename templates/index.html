@@ -76,5 +76,22 @@
       <hr />
       {% endfor %}
     </div>
+    {% if page %}
+    <div class="bottom">
+      <form method="post">
+        {% if page.page > 1 %}
+        <input type="submit" formaction="/{{ page.page - 1 }}" value="&lt;&lt;" />
+        {% endif %}
+        Sivu {{ page.page }}/{{ page.count }}
+        {% if page.page < page.count %}
+        <input type="submit" formaction="/{{ page.page + 1 }}" value="&gt;&gt;" />
+        {% endif %}
+        {% if keyword %}
+        <input type="hidden" name="keyword" value="{{ keyword }}" />
+        {% endif %}
+      </form>
+      <hr />
+    </div>
+    {% endif %}
   </body>
 </html>
