@@ -22,3 +22,4 @@ CREATE TABLE Classes (
     id INTEGER PRIMARY KEY,
     name TEXT NOT NULL
 );
+CREATE INDEX idx_post_comments ON Comments (post_id);
