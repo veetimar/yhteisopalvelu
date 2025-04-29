@@ -1,6 +1,7 @@
 import functools
 import secrets
 import sqlite3
+import time
 
 import flask
 import markupsafe
@@ -14,6 +15,17 @@ app = flask.Flask(__name__)
 app.secret_key = config.SECRET_KEY
 app.wsgi_app = proxy_fix.ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 PAGE_SIZE = 10
+
+@app.before_request
+def before_request():
+    flask.g.start_time = time.time()
+
+@app.after_request
+def after_request(response):
+    elapsed_time = time.time() - flask.g.start_time
+    if elapsed_time > 1:
+        print(f"Response taking over a second ({round(elapsed_time, 2)} s)")
+    return response
 
 @app.template_filter()
 def show_lines(content):
