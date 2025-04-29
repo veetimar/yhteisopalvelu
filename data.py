@@ -61,7 +61,7 @@ def get_post_pages(page_size, keyword=None):
         args.append(f"%{keyword}%")
     with database.dbase as db:
         post_count = db.query(sql, args=args, one=True)[0]
-    return math.ceil(post_count / page_size)
+    return max(1, math.ceil(post_count / page_size))
 
 def get_comments(post_id=None, comment_id=None, keyword=None, page=None):
     args = []
@@ -98,7 +98,7 @@ def get_comment_pages(post_id, page_size, keyword=None):
         args.append(f"%{keyword}%")
     with database.dbase as db:
         post_count = db.query(sql, args=args, one=True)[0]
-    return math.ceil(post_count / page_size)
+    return max(1, math.ceil(post_count / page_size))
 
 def get_classes(class_id=None):
     args = []
