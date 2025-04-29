@@ -75,12 +75,18 @@
     {% if page %}
     <div class="bottom">
       <form method="post">
+        {% if page.page > 2 %}
+        <input type="submit" formaction="/comments/{{ post.id }}/1" value="&lt;&lt;" />
+        {% endif %}
         {% if page.page > 1 %}
-        <input type="submit" formaction="/comments/{{ post.id }}/{{ page.page - 1 }}" value="&lt;&lt;" />
+        <input type="submit" formaction="/comments/{{ post.id }}/{{ page.page - 1 }}" value="&lt;" />
         {% endif %}
         Sivu {{ page.page }}/{{ page.count }}
         {% if page.page < page.count %}
-        <input type="submit" formaction="/comments/{{ post.id }}/{{ page.page + 1 }}" value="&gt;&gt;" />
+        <input type="submit" formaction="/comments/{{ post.id }}/{{ page.page + 1 }}" value="&gt;" />
+        {% endif %}
+        {% if page.page < page.count - 1 %}
+        <input type="submit" formaction="/comments/{{ post.id }}/{{ page.count }}" value="&gt;&gt;" />
         {% endif %}
         {% if keyword %}
         <input type="hidden" name="keyword" value="{{ keyword }}" />
