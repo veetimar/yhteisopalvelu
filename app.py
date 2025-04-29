@@ -47,7 +47,7 @@ def index(page=1):
     page_count = data.get_post_pages(PAGE_SIZE, keyword=keyword)
     if page < 1 or page > page_count:
         flask.abort(404)
-    page = {"page": page, "size": PAGE_SIZE, "count": page_count}
+    page = {"page": page, "size": PAGE_SIZE, "count": page_count} if page_count > 1 else None
     posts = data.get_posts(keyword=keyword, page=page)
     if flask.request.method == "GET":
         return flask.render_template("index.html", posts=posts, page=page)
@@ -260,7 +260,7 @@ def comments(post_id, page=1):
     page_count = data.get_comment_pages(post_id, PAGE_SIZE, keyword=keyword)
     if page < 1 or page > page_count:
         flask.abort(404)
-    page = {"page": page, "size": PAGE_SIZE, "count": page_count}
+    page = {"page": page, "size": PAGE_SIZE, "count": page_count} if page_count > 1 else None
     cmmnts = data.get_comments(post_id=post_id, keyword=keyword, page=page)
     if flask.request.method == "GET":
         return flask.render_template("comments.html", post=post, comments=cmmnts, page=page)
