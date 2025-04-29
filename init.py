@@ -5,7 +5,7 @@ import database
 
 def __create_config():
     with open("config.py", "w") as file:
-        file.write(f"SECRET_KEY = \"{secrets.token_hex(16)}\"\n")
+        file.write(f"SECRET_KEY = \"{secrets.token_hex()}\"\n")
 
 def __create_database():
     if os.path.exists("database.db"):
