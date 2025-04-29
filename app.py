@@ -201,7 +201,7 @@ def new_post():
         cs = flask.request.form["class"]
         user_id = flask.session["id"]
         try:
-            data.new_post(content, cs, user_id)
+            data.new_post(content, user_id, cs)
         except sqlite3.IntegrityError:
             flask.abort(403)
         return flask.redirect("/")

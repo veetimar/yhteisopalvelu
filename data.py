@@ -95,10 +95,10 @@ def delete_user(user_id):
     with database.dbase as db:
         return db.execute(sql, args=[user_id])
 
-def new_post(content, cs, user_id):
-    sql = "INSERT INTO Posts (content, class_id, time, user_id) VALUES (?, ?, datetime('now'), ?)"
+def new_post(content, user_id, cs):
+    sql = "INSERT INTO Posts (content, time, user_id, class_id) VALUES (?, datetime('now'), ?, ?)"
     with database.dbase as db:
-        return db.execute(sql, args=[content, cs, user_id])
+        return db.execute(sql, args=[content, user_id, cs])
 
 def edit_post(content, cs, post_id):
     sql = "UPDATE Posts SET content = ?, class_id = ? WHERE id = ?"
