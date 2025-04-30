@@ -47,7 +47,7 @@ def get_posts(post_id=None, keyword=None, page=None):
     if page:
         args.append(page["size"])
         args.append((page["page"] - 1) * page["size"])
-        sql += f" LIMIT ? OFFSET ?"
+        sql += " LIMIT ? OFFSET ?"
     with database.dbase as db:
         return db.query(sql, args=args, one=one)
 
@@ -83,7 +83,7 @@ def get_comments(post_id=None, comment_id=None, keyword=None, page=None):
     if page:
         args.append(page["size"])
         args.append((page["page"] - 1) * page["size"])
-        sql += f" LIMIT ? OFFSET ?"
+        sql += " LIMIT ? OFFSET ?"
     with database.dbase as db:
         return db.query(sql, args=args, one=one)
 
