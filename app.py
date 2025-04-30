@@ -50,7 +50,7 @@ def check_csrf():
 def create_session(user_id, username):
     flask.session["id"] = user_id
     flask.session["username"] = username
-    flask.session["csrf_token"] = secrets.token_hex(16)
+    flask.session["csrf_token"] = secrets.token_hex()
 
 @app.route("/", methods=["GET", "POST"])
 @app.route("/<int:page>", methods=["GET", "POST"])
