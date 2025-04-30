@@ -4,7 +4,7 @@
 <form action="/edit_comment/{{ comment.id }}" method="post">
   <p>
     <label for="content">Tee tarvittavat muutokset</label>:<br />
-    <textarea id="content" name="content" rows="5" cols="50" maxlength="1000" required>{{ comment.content }}</textarea>
+    <textarea id="content" name="content" rows="5" cols="50" maxlength="1000" required>{{ filled.content if filled else comment.content }}</textarea>
   </p>
   <input type="submit" value="Muokkaa" />
   <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />

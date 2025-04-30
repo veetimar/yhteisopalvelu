@@ -4,7 +4,7 @@
 <form action="/new_post" method="post">
   <p>
     <label for="content">Mitä mietteitä</label>:<br />
-    <textarea id="content" name="content" rows="5" cols="50" maxlength="1000" required></textarea>
+    <textarea id="content" name="content" rows="5" cols="50" maxlength="1000" required>{{ filled.content }}</textarea>
   </p>
   <p>
     {% for class in classes %}

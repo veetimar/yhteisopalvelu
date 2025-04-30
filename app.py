@@ -2,6 +2,7 @@ import functools
 import secrets
 import sqlite3
 import time
+import string
 
 import flask
 import markupsafe
@@ -15,6 +16,7 @@ app = flask.Flask(__name__)
 app.secret_key = config.SECRET_KEY
 app.wsgi_app = proxy_fix.ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 PAGE_SIZE = 10
+ASCII = string.printable + "öäåÖÄÅ"
 
 @app.before_request
 def before_request():
@@ -40,6 +42,9 @@ def require_login(f):
             return flask.redirect("/login")
         return f(*args, **kwargs)
     return wrapper
+
+def check_string(string):
+    return all(char in ASCII for char in string)
 
 def check_csrf():
     if "csrf_token" not in flask.request.form or "csrf_token" not in flask.session:
@@ -84,6 +89,9 @@ def register():
         if not (username and password1 and password2) or max(len(username), len(password1), len(password2)) > 20:
             flask.abort(403)
         filled = {"username": username}
+        if not check_string(username):
+            flask.flash("VIRHE: Käyttäjänimessä ei-sallittuja merkkejä")
+            return flask.render_template("register.html", filled=filled, next_page=next_page)
         if password1 != password2:
             flask.flash("VIRHE: Salasanat eivät täsmää")
             return flask.render_template("register.html", filled=filled, next_page=next_page)
@@ -109,6 +117,9 @@ def login():
         if not username or not password or len(username) > 20 or len(password) > 20:
             flask.abort(403)
         filled = {"username": username}
+        if not check_string(username):
+            flask.flash("VIRHE: Käyttäjänimessä ei-sallittuja merkkejä")
+            return flask.render_template("register.html", filled=filled, next_page=next_page)
         usr = data.get_users(username=username)
         pwhash = usr["pwhash"] if usr else None
         if not pwhash:
@@ -208,14 +219,18 @@ def delete_user():
 @app.route("/new_post", methods=["GET", "POST"])
 @require_login
 def new_post():
+    classes = data.get_classes()
     if flask.request.method == "GET":
-        classes = data.get_classes()
-        return flask.render_template("new_post.html", classes=classes)
+        return flask.render_template("new_post.html", classes=classes, filled={})
     if flask.request.method == "POST":
         check_csrf()
         content = flask.request.form["content"]
         if not content or len(content) > 1000 or "class" not in flask.request.form:
             flask.abort(403)
+        if not check_string(content):
+            filled = {"content": content}
+            flask.flash("VIRHE: Postauksessa ei-salittuja merkkejä")
+            return flask.render_template("new_post.html", classes=classes, filled=filled)
         cs = flask.request.form["class"]
         user_id = flask.session["id"]
         try:
@@ -228,18 +243,22 @@ def new_post():
 @require_login
 def edit_post(post_id):
     post = data.get_posts(post_id=post_id)
+    classes = data.get_classes()
     if not post:
         flask.abort(404)
     if post["user_id"] != flask.session["id"]:
         flask.abort(403)
     if flask.request.method == "GET":
-        classes = data.get_classes()
-        return flask.render_template("edit_post.html", post=post, classes=classes)
+        return flask.render_template("edit_post.html", post=post, classes=classes, filled={})
     if flask.request.method == "POST":
         check_csrf()
         content = flask.request.form["content"]
         if not content or len(content) > 1000 or "class" not in flask.request.form:
             flask.abort(403)
+        if not check_string(content):
+            filled = {"content": content}
+            flask.flash("VIRHE: Postauksessa ei-salittuja merkkejä")
+            return flask.render_template("edit_post.html", post=post, classes=classes, filled=filled)
         cs = flask.request.form["class"]
         try:
             data.edit_post(content, cs, post_id)
@@ -291,12 +310,16 @@ def new_comment(post_id):
     if not post:
         flask.abort(404)
     if flask.request.method == "GET":
-        return flask.render_template("new_comment.html", post_id=post_id)
+        return flask.render_template("new_comment.html", post_id=post_id, filled={})
     if flask.request.method == "POST":
         check_csrf()
         content = flask.request.form["content"]
         if not content or len(content) > 1000:
             flask.abort(403)
+        if not check_string(content):
+            filled = {"content": content}
+            flask.flash("VIRHE: Kommentissa ei-salittuja merkkejä")
+            return flask.render_template("new_comment.html", post_id=post_id, filled=filled)
         user_id = flask.session["id"]
         data.new_comment(content, user_id, post_id)
         return flask.redirect(f"/comments/{post_id}")
@@ -310,12 +333,16 @@ def edit_domment(comment_id):
     if comment["user_id"] != flask.session["id"]:
         flask.abort(403)
     if flask.request.method == "GET":
-        return flask.render_template("edit_comment.html", comment=comment)
+        return flask.render_template("edit_comment.html", comment=comment, filled={})
     if flask.request.method == "POST":
         check_csrf()
         content = flask.request.form["content"]
         if not content or len(content) > 1000:
             flask.abort(403)
+        if not check_string(content):
+            filled = {"content": content}
+            flask.flash("VIRHE: Kommentissa ei-salittuja merkkejä")
+            return flask.render_template("edit_comment.html", comment=comment, filled=filled)
         data.edit_comment(content, comment_id)
         return flask.redirect(f"/comments/{comment["post_id"]}")
 
