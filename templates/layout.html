@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fi">
+  <head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="header">
+      <h1>
+        {{ self.title() }}
+      </h1>
+    </div>
+    <div class="nav">
+      <nav>
+        {% if self.title() != "Etusivu" %}
+        <p>
+          <a href="/">Etusivulle</a>
+        </p>
+        {% endif %}
+        {% if self.title() != "Kirjaudu" and self.title() != "Rekisteröidy" %}
+        {% if session.username %}
+        <p>
+          Tervetuloa <a href="/user/{{ session.id }}">{{ session.username }}</a>
+        </p>
+        <p>
+          <a href="/logout">Kirjaudu ulos</a>
+        </p>
+        {% else %}
+        <p>
+          <a href="/register">Rekisteröidy</a>
+        </p>
+        <p>
+          <a href="/login">Kirjaudu sisään</a>
+        </p>
+        {% endif %}
+        {% endif %}
+      </nav>
+      <hr />
+    </div>
+    {% if get_flashed_messages() %}
+    <div class="messages">
+      {% for message in get_flashed_messages() %}
+      <p>
+        {{ message }}
+      </p>
+      {% endfor %}
+      <hr />
+    </div>
+    {% endif %}
+    <div class="content">
+      {% block content %}{% endblock %}
+    </div>
+  </body>
+</html>

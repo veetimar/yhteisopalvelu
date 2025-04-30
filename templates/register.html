@@ -1,55 +1,34 @@
-<!DOCTYPE html>
-<html lang="fi">
-  <head>
-    <meta charset="UTF-8">
-    <title>Rekisteröidy</title>
-    <link rel="stylesheet" href="/static/style.css" />
-  </head>
-  <body>
-    <div class="top">
-      <a href="/">Etusivulle</a>
-      <hr />
-      <hr />
-    </div>
-    <div class="login">
-      <h2>
-        Rekisteröidy
-      </h2>
-      <form action="/login" method="post">
-        Tai
-        <input id="get" type="submit" value="Kirjaudu sisään" />
-        <input type="hidden" name="get" />
-        {% if next_page %}
-        <input type="hidden" name="next_page" value="{{ next_page }}" />
-        {% else %}
-        <input type="hidden" name="next_page" value="/" />
-        {% endif %}
-      </form>
-      <form action="/register" method="post">
-        <p>
-          <label for="username">Käyttäjätunnus</label>:<br />
-          <input type="text" id="username" name="username" maxlength="20" value="{{ filled.username }}" required />
-        </p>
-        <p>
-          <label for="password1">Salasana</label>:<br />
-          <input type="password" id="password1" name="password1" maxlength="20" required />
-        </p>
-        <p>
-          <label for="password2">Salasana uudelleen</label>:<br />
-          <input type="password" id="password2" name="password2" maxlength="20" required />
-        </p>
-        <input type="submit" value="Rekisteröidy" />
-        {% if next_page %}
-        <input type="hidden" name="next_page" value="{{ next_page }}" />
-        {% else %}
-        <input type="hidden" name="next_page" value="/" />
-        {% endif %}
-      </form>
-      {% for message in get_flashed_messages() %}
-      <p>
-        {{ message }}
-      </p>
-      {% endfor %}
-    </div>
-  </body>
-</html>
+{% extends "layout.html" %}
+{% block title %}Rekisteröidy{% endblock %}
+{% block content %}
+<form action="/login" method="post">
+  Tai
+  <input id="get" type="submit" value="Kirjaudu sisään" />
+  <input type="hidden" name="get" />
+  {% if next_page %}
+  <input type="hidden" name="next_page" value="{{ next_page }}" />
+  {% else %}
+  <input type="hidden" name="next_page" value="/" />
+  {% endif %}
+</form>
+<form action="/register" method="post">
+  <p>
+    <label for="username">Käyttäjätunnus</label>:<br />
+    <input type="text" id="username" name="username" maxlength="20" value="{{ filled.username }}" required />
+  </p>
+  <p>
+    <label for="password1">Salasana</label>:<br />
+    <input type="password" id="password1" name="password1" maxlength="20" required />
+  </p>
+  <p>
+    <label for="password2">Salasana uudelleen</label>:<br />
+    <input type="password" id="password2" name="password2" maxlength="20" required />
+  </p>
+  <input type="submit" value="Rekisteröidy" />
+  {% if next_page %}
+  <input type="hidden" name="next_page" value="{{ next_page }}" />
+  {% else %}
+  <input type="hidden" name="next_page" value="/" />
+  {% endif %}
+</form>
+{% endblock %}

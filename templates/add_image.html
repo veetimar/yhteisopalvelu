@@ -1,33 +1,12 @@
-<!DOCTYPE html>
-<html lang="fi">
-  <head>
-    <meta charset="UTF-8">
-    <title>Lisää kuva</title>
-    <link rel="stylesheet" href="/static/style.css" />
-  </head>
-  <body>
-    <div class="top">
-      <a href="/">Etusivulle</a>
-      <hr />
-      <hr />
-    </div>
-    <div class="image">
-      <h2>
-        Lisää kuva
-      </h2>
-      <form action="/add_image" method="post" enctype="multipart/form-data">
-        <p>
-            <label for="add_image">Kuva (jätä tyhjäksi poistaaksesi vanhan kuvan)</label>:<br />
-            <input type="file" id="add_image" name="add_image" accept=".jpg" />
-        </p>
-        <input type="submit" value="Lähetä" />
-        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
-      </form>
-      {% for message in get_flashed_messages() %}
-      <p>
-        {{ message }}
-      </p>
-      {% endfor %}
-    </div>
-  </body>
-</html>
+{% extends "layout.html" %}
+{% block title %}Lisää kuva{% endblock %}
+{% block content %}
+<form action="/add_image" method="post" enctype="multipart/form-data">
+  <p>
+      <label for="add_image">Kuva (jätä tyhjäksi poistaaksesi vanhan kuvan)</label>:<br />
+      <input type="file" id="add_image" name="add_image" accept=".jpg" />
+  </p>
+  <input type="submit" value="Lähetä" />
+  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+</form>
+{% endblock %}

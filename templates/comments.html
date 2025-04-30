@@ -1,99 +1,83 @@
-<!DOCTYPE html>
-<html lang="fi">
-  <head>
-    <meta charset="UTF-8">
-    <title>Postaus {{ post.id }}</title>
-    <link rel="stylesheet" href="/static/style.css" />
-  </head>
-  <body>
-    <div class="top">
-      <a href="/">Etusivulle</a>
-      <hr />
-      <hr />
-    </div>
-    <div class = "old">
-      <h2>
-        Postaus {{ post.id }}
-      </h2>
-      <p>
-        {{ post.time }}, <a href="/user/{{ post.user_id }}">{{ post.username }}</a>:
-      </p>
-      <p>
-        {{ post.content | show_lines }}
-      </p>
-      <p>
-        <strong>{{ post.class }}</strong>
-      </p>
-      {% if session.username %}
-      <p>
-        <a href="/new_comment/{{ post.id }}">Kommentoi</a>
-      </p>
-      {% else %}
-      <p>
-        <a href=/login>Kirjaudu sisään</a> kommentoidaksesi
-      </p>
-      {% endif %}
-      <hr />
-      <hr />
-    </div>
-    <div class="search">
-      <form action="/comments/{{ post.id }}" method="post">
-        <p>
-          <label for="keyword">Etsi kommentteja</label>:<br />
-          <input type="text" id="keyword" name="keyword" maxlength="1000" required />
-          <input type="submit" value="Etsi" />
-        </p>
-      </form>
-      {% if keyword %}
-      <form action="/comments/{{ post.id }}" method="post">
-        <p>
-          Tulokset haulle "{{ keyword }}":
-          <input type="submit" name="cancel" value="Peruuta" />
-        </p>
-      </form>
-      {% endif %}
-      <hr />
-      <hr />
-    </div>
-    <div class="posts">
-      {% for comment in comments %}
-      <p id="{{ comment.id }}">
-        {{ comment.time }}, <a href="/user/{{ comment.user_id }}">{{ comment.username }}</a>:
-      </p>
-      <p>
-        {{ comment.content | show_lines }}
-      </p>
-      {% if comment.username == session.username %}
-      <p>
-        <a href="/edit_comment/{{ comment.id}}">Muokkaa</a> |
-        <a href="/delete_comment/{{ comment.id }}">Poista</a>
-      </p>
-      {% endif %}
-      <hr />
-      {% endfor %}
-    </div>
-    {% if page %}
-    <div class="bottom">
-      <form method="post">
-        {% if page.page > 2 %}
-        <input type="submit" formaction="/comments/{{ post.id }}/1" value="&lt;&lt;" />
-        {% endif %}
-        {% if page.page > 1 %}
-        <input type="submit" formaction="/comments/{{ post.id }}/{{ page.page - 1 }}" value="&lt;" />
-        {% endif %}
-        Sivu {{ page.page }}/{{ page.count }}
-        {% if page.page < page.count %}
-        <input type="submit" formaction="/comments/{{ post.id }}/{{ page.page + 1 }}" value="&gt;" />
-        {% endif %}
-        {% if page.page < page.count - 1 %}
-        <input type="submit" formaction="/comments/{{ post.id }}/{{ page.count }}" value="&gt;&gt;" />
-        {% endif %}
-        {% if keyword %}
-        <input type="hidden" name="keyword" value="{{ keyword }}" />
-        {% endif %}
-      </form>
-      <hr />
-    </div>
+{% extends "layout.html" %}
+{% block title %}Kommentit{% endblock %}
+{% block content %}
+<div class = "old">
+  <p>
+    {{ post.time }}, <a href="/user/{{ post.user_id }}">{{ post.username }}</a>:
+  </p>
+  <p>
+    {{ post.content | show_lines }}
+  </p>
+  <p>
+    <strong>{{ post.class }}</strong>
+  </p>
+  <hr />
+</div>
+<div class="search">
+  {% if session.username %}
+  <p>
+    <a href="/new_comment/{{ post.id }}">Uusi kommentti</a>
+  </p>
+  {% else %}
+  <p>
+    <a href=/login>Kirjaudu sisään</a> kommentoidaksesi
+  </p>
+  {% endif %}
+  <form action="/comments/{{ post.id }}" method="post">
+    <p>
+      <label for="keyword">Etsi kommentteja</label>:<br />
+      <input type="text" id="keyword" name="keyword" maxlength="1000" required />
+      <input type="submit" value="Etsi" />
+    </p>
+  </form>
+  {% if keyword %}
+  <form action="/comments/{{ post.id }}" method="post">
+    <p>
+      Tulokset haulle "{{ keyword }}":
+      <input type="submit" name="cancel" value="Peruuta" />
+    </p>
+  </form>
+  {% endif %}
+  <hr />
+</div>
+<div class="posts">
+  {% for comment in comments %}
+  <p id="{{ comment.id }}">
+    {{ comment.time }}, <a href="/user/{{ comment.user_id }}">{{ comment.username }}</a>:
+  </p>
+  <p>
+    {{ comment.content | show_lines }}
+  </p>
+  {% if comment.username == session.username %}
+  <p>
+    <a href="/edit_comment/{{ comment.id}}">Muokkaa</a> |
+    <a href="/delete_comment/{{ comment.id }}">Poista</a>
+  </p>
+  {% endif %}
+  <hr />
+  {% endfor %}
+</div>
+{% if page %}
+<div class="bottom">
+  <form method="post">
+    {% if page.page > 2 %}
+    <input type="submit" formaction="/comments/{{ post.id }}/1" value="&lt;&lt;" />
     {% endif %}
-  </body>
-</html>
+    {% if page.page > 1 %}
+    <input type="submit" formaction="/comments/{{ post.id }}/{{ page.page - 1 }}" value="&lt;" />
+    {% endif %}
+    Sivu {{ page.page }}/{{ page.count }}
+    {% if page.page < page.count %}
+    <input type="submit" formaction="/comments/{{ post.id }}/{{ page.page + 1 }}" value="&gt;" />
+    {% endif %}
+    {% if page.page < page.count - 1 %}
+    <input type="submit" formaction="/comments/{{ post.id }}/{{ page.count }}" value="&gt;&gt;" />
+    {% endif %}
+    {% if keyword %}
+    <input type="hidden" name="keyword" value="{{ keyword }}" />
+    {% endif %}
+  </form>
+  <hr />
+</div>
+    {% endif %}
+{% endblock %}

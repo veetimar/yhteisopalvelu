@@ -1,28 +1,12 @@
-<!DOCTYPE html>
-<html lang="fi">
-  <head>
-    <meta charset="UTF-8">
-    <title>Muokkaa kommenttia</title>
-    <link rel="stylesheet" href="/static/style.css" />
-  </head>
-  <body>
-    <div class="top">
-      <a href="/">Etusivulle</a>
-      <hr />
-      <hr />
-    </div>
-    <div class="edit">
-      <h2>
-        Muokkaa kommenttia
-      </h2>
-      <form action="/edit_comment/{{ comment.id }}" method="post">
-        <p>
-          <label for="content">Tee tarvittavat muutokset</label>:<br />
-          <textarea id="content" name="content" rows="5" cols="50" maxlength="1000" required>{{ comment.content }}</textarea>
-        </p>
-        <input type="submit" value="Muokkaa" />
-        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
-      </form>
-    </div>
-  </body>
-</html>
+{% extends "layout.html" %}
+{% block title %}Muokkaa kommenttia{% endblock %}
+{% block content %}
+<form action="/edit_comment/{{ comment.id }}" method="post">
+  <p>
+    <label for="content">Tee tarvittavat muutokset</label>:<br />
+    <textarea id="content" name="content" rows="5" cols="50" maxlength="1000" required>{{ comment.content }}</textarea>
+  </p>
+  <input type="submit" value="Muokkaa" />
+  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+</form>
+{% endblock %}

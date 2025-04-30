@@ -1,51 +1,30 @@
-<!DOCTYPE html>
-<html lang="fi">
-  <head>
-    <meta charset="UTF-8">
-    <title>Kirjaudu sisään</title>
-    <link rel="stylesheet" href="/static/style.css" />
-  </head>
-  <body>
-    <div class="top">
-      <a href="/">Etusivulle</a>
-      <hr />
-      <hr />
-    </div>
-    <div class="login">
-      <h2>
-        Kirjaudu sisään
-      </h2>
-      <form action="/register" method="post">
-        Tai
-        <input id="get" type="submit" value="Rekisteröidy" />
-        <input type="hidden" name="get" />
-        {% if next_page %}
-        <input type="hidden" name="next_page" value="{{ next_page }}" />
-        {% else %}
-        <input type="hidden" name="next_page" value="/" />
-        {% endif %}
-      </form>
-      <form action="/login" method="post">
-        <p>
-          <label for="username">Käyttäjätunnus</label>:<br />
-          <input type="text" id="username" name="username" maxlength="20" value="{{ filled.username }}" required />
-        </p>
-        <p>
-          <label for="password">Salasana</label>:<br />
-          <input type="password" id="password" name="password" maxlength="20" required />
-        </p>
-        <input type="submit" value="Kirjaudu sisään" />
-        {% if next_page %}
-        <input type="hidden" name="next_page" value="{{ next_page }}" />
-        {% else %}
-        <input type="hidden" name="next_page" value="/" />
-        {% endif %}
-      </form>
-      {% for message in get_flashed_messages() %}
-      <p>
-        {{ message }}
-      </p>
-      {% endfor %}
-    </div>
-  </body>
-</html>
+{% extends "layout.html" %}
+{% block title %}Kirjaudu{% endblock %}
+{% block content %}
+<form action="/register" method="post">
+  Tai
+  <input id="get" type="submit" value="Rekisteröidy" />
+  <input type="hidden" name="get" />
+  {% if next_page %}
+  <input type="hidden" name="next_page" value="{{ next_page }}" />
+  {% else %}
+  <input type="hidden" name="next_page" value="/" />
+  {% endif %}
+</form>
+<form action="/login" method="post">
+  <p>
+    <label for="username">Käyttäjätunnus</label>:<br />
+    <input type="text" id="username" name="username" maxlength="20" value="{{ filled.username }}" required />
+  </p>
+  <p>
+    <label for="password">Salasana</label>:<br />
+    <input type="password" id="password" name="password" maxlength="20" required />
+  </p>
+  <input type="submit" value="Kirjaudu sisään" />
+  {% if next_page %}
+  <input type="hidden" name="next_page" value="{{ next_page }}" />
+  {% else %}
+  <input type="hidden" name="next_page" value="/" />
+  {% endif %}
+</form>
+{% endblock %}

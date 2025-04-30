@@ -1,28 +1,12 @@
-<!DOCTYPE html>
-<html lang="fi">
-  <head>
-    <meta charset="UTF-8">
-    <title>Vahvista</title>
-    <link rel="stylesheet" href="/static/style.css" />
-  </head>
-  <body>
-    <div class="top">
-      <a href="/">Etusivulle</a>
-      <hr />
-      <hr />
-    </div>
-    <div class="confirm">
-      <h2>
-        Vahvista
-      </h2>
-      <form action="/delete_comment/{{ comment_id }}" method="post">
-        <p>
-          Haluatko varmasti poistaa kommentin?
-        </p>
-        <input type="submit" name="no" value="Ei" />
-        <input type="submit" name="yes" value="Kyllä" />
-        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
-      </form>
-    </div>
-  </body>
-</html>
+{% extends "layout.html" %}
+{% block title %}Vahvista{% endblock %}
+{% block content %}
+<form action="/delete_comment/{{ comment_id }}" method="post">
+  <p>
+    Haluatko varmasti poistaa kommentin?
+  </p>
+  <input type="submit" name="no" value="Ei" />
+  <input type="submit" name="yes" value="Kyllä" />
+  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+</form>
+{% endblock %}

@@ -189,6 +189,7 @@ def change_password():
             return flask.render_template("change_password.html")
         pwhash = security.generate_password_hash(password1)
         data.change_password(pwhash, user_id)
+        flask.flash("Salasanan vaihto onnistui")
         return flask.redirect(f"/user/{user_id}")
 
 @app.route("/delete_user", methods=["GET", "POST"])

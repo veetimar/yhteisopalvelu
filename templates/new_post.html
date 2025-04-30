@@ -1,33 +1,17 @@
-<!DOCTYPE html>
-<html lang="fi">
-  <head>
-    <meta charset="UTF-8">
-    <title>Julkaise postaus</title>
-    <link rel="stylesheet" href="/static/style.css" />
-  </head>
-  <body>
-    <div class="top">
-      <a href="/">Etusivulle</a>
-      <hr />
-      <hr />
-    </div>
-    <div class="new">
-      <h2>
-        Julkaise postaus
-      </h2>
-      <form action="/new_post" method="post">
-        <p>
-          <label for="content">Mitä mietteitä</label>:<br />
-          <textarea id="content" name="content" rows="5" cols="50" maxlength="1000" required></textarea>
-        </p>
-        <p>
-          {% for class in classes %}
-          <input type="radio" name="class" value="{{ class.id }}" required /> {{ class.name }}
-          {% endfor %}
-        </p>
-        <input type="submit" value="Julkaise" />
-        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
-      </form>
-    </div>
-  </body>
-</html>
+{% extends "layout.html" %}
+{% block title %}Uusi postaus{% endblock %}
+{% block content %}
+<form action="/new_post" method="post">
+  <p>
+    <label for="content">Mitä mietteitä</label>:<br />
+    <textarea id="content" name="content" rows="5" cols="50" maxlength="1000" required></textarea>
+  </p>
+  <p>
+    {% for class in classes %}
+    <input type="radio" name="class" value="{{ class.id }}" required /> {{ class.name }}
+    {% endfor %}
+  </p>
+  <input type="submit" value="Julkaise" />
+  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+</form>
+{% endblock %}

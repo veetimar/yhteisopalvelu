@@ -1,46 +1,34 @@
-<!DOCTYPE html>
-<html lang="fi">
-  <head>
-    <meta charset="UTF-8">
-    <title>Käyttäjä {{ user.username }}</title>
-    <link rel="stylesheet" href="/static/style.css" />
-  </head>
-  <body>
-    <div class="top">
-      <a href="/">Etusivulle</a>
-      <hr />
-      <hr />
-    </div>
-    <div class="user">
-      <h2>
-        Käyttäjä <i>{{ user.username }}</i>
-      </h2>
-      <p>
-        {% if user.has_image %}
-        <img id="image" src="/show_image/{{ user.id }}" alt="profiilikuva" />
-        {% else %}
-        <i>Ei profiilikuvaa</i>
-        {% endif %}
-      </p>
-      <p>
-        {{ user.post_count }} postausta
-      </p>
-      <p>
-        {{ user.comment_count }} kommenttia
-      </p>
-      {% if session.username == user.username %}
-      <hr />
-      <h3>Ylläpitopaneeli</h3>
-      <p>
-        <a href="/add_image">Lisää/vaihda/poista profiilikuva</a>
-      </p>
-      <p>
-        <a href="/change_password">Vaihda salasana</a>
-      </p>
-      <p>
-        <a href="/delete_user">Poista käyttäjä</a>
-      </p>
-      {% endif %}
-    </div>
-  </body>
-</html>
+{% extends "layout.html" %}
+{% block title %}Käyttäjä {{ user.username }}{% endblock %}
+{% block content %}
+<div class="user">
+  <p>
+    {% if user.has_image %}
+    <img id="image" src="/show_image/{{ user.id }}" alt="profiilikuva" />
+    {% else %}
+    <em>Ei profiilikuvaa</em>
+    {% endif %}
+  </p>
+  <p>
+    {{ user.post_count }} postausta
+  </p>
+  <p>
+    {{ user.comment_count }} kommenttia
+  </p>
+</div>
+{% if session.username == user.username %}
+<div class="admin">
+  <hr />
+  <h3>Ylläpitopaneeli</h3>
+  <p>
+    <a href="/add_image">Lisää/vaihda/poista profiilikuva</a>
+  </p>
+  <p>
+    <a href="/change_password">Vaihda salasana</a>
+  </p>
+  <p>
+    <a href="/delete_user">Poista käyttäjä</a>
+  </p>
+</div>
+{% endif %}
+{% endblock %}

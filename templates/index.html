@@ -1,103 +1,77 @@
-<!DOCTYPE html>
-<html lang="fi">
-  <head>
-    <meta charset="UTF-8">
-    <title>Etusivu</title>
-    <link rel="stylesheet" href="/static/style.css" />
-  </head>
-  <body>
-    <div class="top">
-      <h2>
-        Etusivu
-      </h2>
-      {% if session.username %}
-      <p>
-        Tervetuloa <a href="/user/{{ session.id }}">{{ session.username }}</a>
-      </p>
-      <p>
-        <a href="/logout">Kirjaudu ulos</a>
-      </p>
-      <p>
-        <a href="/new_post">Julkaise postaus</a>
-      </p>
-      {% else %}
-      <p>
-        <a href="/register">Rekisteröidy</a>
-      </p>
-      <p>
-        <a href="/login">Kirjaudu sisään</a>
-      </p>
-      <p>
-        Sinun täytyy olla kirjautunut sisään postataksesi
-      </p>
-      {% endif %}
-      <hr />
-      <hr />
-    </div>
-    <div class="search">
-      <form action="/" method="post">
-        <p>
-          <label for="keyword">Etsi postauksia</label>:<br />
-          <input type="text" id="keyword" name="keyword" maxlength="1000" required />
-          <input type="submit" name = "search" value="Etsi" />
-        </p>
-      </form>
-      {% if keyword %}
-      <form action="/" method="post">
-        <p>
-          Tulokset haulle "{{ keyword }}":
-          <input type="submit" name="cancel" value="Peruuta" />
-        </p>
-      </form>
-      {% endif %}
-      <hr />
-      <hr />
-    </div>
-    <div class="posts">
-      {% for post in posts %}
-      <p id="{{ post.id }}">
-        {{ post.time }}, <a href="/user/{{ post.user_id }}">{{ post.username }}</a>:
-      </p>
-      <p>
-        {{ post.content | show_lines }}
-      </p>
-      <p>
-        <strong>{{ post.class }}</strong>
-      </p>
-      <p>
-        <a href="/comments/{{ post.id }}">{{ post.count }} kommenttia</a>
-      </p>
-      {% if post.username == session.username %}
-      <p>
-        <a href="/edit_post/{{ post.id }}">Muokkaa</a> |
-        <a href="/delete_post/{{ post.id }}">Poista</a>
-      </p>
-      {% endif %}
-      <hr />
-      {% endfor %}
-    </div>
-    {% if page %}
-    <div class="bottom">
-      <form method="post">
-        {% if page.page > 2 %}
-        <input type="submit" formaction="/1" value="&lt;&lt;" />
-        {% endif %}
-        {% if page.page > 1 %}
-        <input type="submit" formaction="/{{ page.page - 1 }}" value="&lt;" />
-        {% endif %}
-        Sivu {{ page.page }}/{{ page.count }}
-        {% if page.page < page.count %}
-        <input type="submit" formaction="/{{ page.page + 1 }}" value="&gt;" />
-        {% endif %}
-        {% if page.page < page.count - 1 %}
-        <input type="submit" formaction="/{{ page.count }}" value="&gt;&gt;" />
-        {% endif %}
-        {% if keyword %}
-        <input type="hidden" name="keyword" value="{{ keyword }}" />
-        {% endif %}
-      </form>
-      <hr />
-    </div>
+{% extends "layout.html" %}
+{% block title %}Etusivu{% endblock %}
+{% block content %}
+<div class="search">
+  {% if session.username %}
+  <p>
+    <a href="/new_post">Uusi postaus</a>
+  </p>
+  {% else %}
+  <p>
+    <a href=/login>Kirjaudu sisään</a> postataksesi
+  </p>
+  {% endif %}
+  <form action="/" method="post">
+    <p>
+      <label for="keyword">Etsi postauksia</label>:<br />
+      <input type="text" id="keyword" name="keyword" maxlength="1000" required />
+      <input type="submit" name = "search" value="Etsi" />
+    </p>
+  </form>
+  {% if keyword %}
+  <form action="/" method="post">
+    <p>
+      Tulokset haulle "{{ keyword }}":
+      <input type="submit" name="cancel" value="Peruuta" />
+    </p>
+  </form>
+  {% endif %}
+  <hr />
+</div>
+<div class="posts">
+  {% for post in posts %}
+  <p id="{{ post.id }}">
+    {{ post.time }}, <a href="/user/{{ post.user_id }}">{{ post.username }}</a>:
+  </p>
+  <p>
+    {{ post.content | show_lines }}
+  </p>
+  <p>
+    <strong>{{ post.class }}</strong>
+  </p>
+  <p>
+    <a href="/comments/{{ post.id }}">{{ post.count }} kommenttia</a>
+  </p>
+  {% if post.username == session.username %}
+  <p>
+    <a href="/edit_post/{{ post.id }}">Muokkaa</a> |
+    <a href="/delete_post/{{ post.id }}">Poista</a>
+  </p>
+  {% endif %}
+  <hr />
+  {% endfor %}
+</div>
+{% if page %}
+<div class="bottom">
+  <form method="post">
+    {% if page.page > 2 %}
+    <input type="submit" formaction="/1" value="&lt;&lt;" />
     {% endif %}
-  </body>
-</html>
+    {% if page.page > 1 %}
+    <input type="submit" formaction="/{{ page.page - 1 }}" value="&lt;" />
+    {% endif %}
+    Sivu {{ page.page }}/{{ page.count }}
+    {% if page.page < page.count %}
+    <input type="submit" formaction="/{{ page.page + 1 }}" value="&gt;" />
+    {% endif %}
+    {% if page.page < page.count - 1 %}
+    <input type="submit" formaction="/{{ page.count }}" value="&gt;&gt;" />
+    {% endif %}
+    {% if keyword %}
+    <input type="hidden" name="keyword" value="{{ keyword }}" />
+    {% endif %}
+  </form>
+  <hr />
+</div>
+{% endif %}
+{% endblock %}
