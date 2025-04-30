@@ -1,5 +1,22 @@
 {% extends "layout.html" %}
 {% block title %}Etusivu{% endblock %}
+{% block nav %}
+{% if session.username %}
+<p>
+  Tervetuloa <a href="/user/{{ session.id }}">{{ session.username }}</a>
+</p>
+<p>
+  <a href="/logout">Kirjaudu ulos</a>
+</p>
+{% else %}
+<p>
+  <a href="/register">Rekisteröidy</a>
+</p>
+<p>
+  <a href="/login">Kirjaudu sisään</a>
+</p>
+{% endif %}
+{% endblock %}
 {% block content %}
 <div class="search">
   {% if session.username %}
@@ -52,7 +69,7 @@
   {% endfor %}
 </div>
 {% if page %}
-<div class="bottom">
+<div class="pages">
   <form method="post">
     {% if page.page > 2 %}
     <input type="submit" formaction="/1" value="&lt;&lt;" />

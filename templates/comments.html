@@ -58,7 +58,7 @@
   {% endfor %}
 </div>
 {% if page %}
-<div class="bottom">
+<div class="pages">
   <form method="post">
     {% if page.page > 2 %}
     <input type="submit" formaction="/comments/{{ post.id }}/1" value="&lt;&lt;" />

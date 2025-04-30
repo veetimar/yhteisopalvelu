@@ -1,5 +1,10 @@
 {% extends "layout.html" %}
 {% block title %}Kirjaudu{% endblock %}
+{% block nav %}
+<p>
+  <a href="/">Etusivulle</a>
+</p>
+{% endblock %}
 {% block content %}
 <form action="/register" method="post">
   Tai

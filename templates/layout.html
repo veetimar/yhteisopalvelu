@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fi">
   <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="/static/style.css" />
   </head>
@@ -13,12 +13,10 @@
     </div>
     <div class="nav">
       <nav>
-        {% if self.title() != "Etusivu" %}
+        {% block nav %}
         <p>
           <a href="/">Etusivulle</a>
         </p>
-        {% endif %}
-        {% if self.title() != "Kirjaudu" and self.title() != "Rekisteröidy" %}
         {% if session.username %}
         <p>
           Tervetuloa <a href="/user/{{ session.id }}">{{ session.username }}</a>
@@ -34,7 +32,7 @@
           <a href="/login">Kirjaudu sisään</a>
         </p>
         {% endif %}
-        {% endif %}
+        {% endblock %}
       </nav>
       <hr />
     </div>
