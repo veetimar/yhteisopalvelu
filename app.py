@@ -230,7 +230,7 @@ def new_post():
         cs = int(flask.request.form["class"])
         if not check_string(content):
             filled = {"content": content, "class": cs}
-            flask.flash("VIRHE: Postauksessa ei-salittuja merkkejä")
+            flask.flash("VIRHE: Postauksessa ei-sallittuja merkkejä")
             return flask.render_template("new_post.html", classes=classes, filled=filled)
         user_id = flask.session["id"]
         try:
@@ -259,7 +259,7 @@ def edit_post(post_id):
         cs = int(flask.request.form["class"])
         if not check_string(content):
             filled = {"content": content, "class": cs}
-            flask.flash("VIRHE: Postauksessa ei-salittuja merkkejä")
+            flask.flash("VIRHE: Postauksessa ei-sallittuja merkkejä")
             return flask.render_template("edit_post.html", post_id=post_id, classes=classes, filled=filled)
         try:
             data.edit_post(content, cs, post_id)
@@ -319,7 +319,7 @@ def new_comment(post_id):
             flask.abort(403)
         if not check_string(content):
             filled = {"content": content}
-            flask.flash("VIRHE: Kommentissa ei-salittuja merkkejä")
+            flask.flash("VIRHE: Kommentissa ei-sallittuja merkkejä")
             return flask.render_template("new_comment.html", post_id=post_id, filled=filled)
         user_id = flask.session["id"]
         data.new_comment(content, user_id, post_id)
@@ -342,7 +342,7 @@ def edit_domment(comment_id):
             flask.abort(403)
         if not check_string(content):
             filled = {"content": content}
-            flask.flash("VIRHE: Kommentissa ei-salittuja merkkejä")
+            flask.flash("VIRHE: Kommentissa ei-sallittuja merkkejä")
             return flask.render_template("edit_comment.html", comment=comment, filled=filled)
         data.edit_comment(content, comment_id)
         return flask.redirect(f"/comments/{comment["post_id"]}")
