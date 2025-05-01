@@ -26,3 +26,7 @@ Käynnistä sovellus
 ```console
 $ python app.py
 ```
+
+### Suuri tietomäärä
+Sovellusta on testattu suurella tietomäärällä (1000 käyttäjää, 100 000 postausta ja 1 000 000 kommenttia).
+Tällä tietomäärällä sovellus toimii normaalisti ja kaikki sivut latautuvat alle sekunnissa.
