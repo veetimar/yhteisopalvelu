@@ -5,7 +5,7 @@
   <form action="/edit_post/{{ post_id }}" method="post">
     <p>
       <label for="content">Tee tarvittavat muutokset</label>:<br />
-      <textarea id="content" name="content" rows="5" cols="50" maxlength="1000" required>{{ filled.content }}</textarea>
+      <textarea id="content" name="content" rows="7" cols="70" maxlength="1000" required>{{ filled.content }}</textarea>
     </p>
     <p>
       {% for class in classes %}
