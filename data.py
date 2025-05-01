@@ -32,7 +32,7 @@ def get_image(user_id):
 def get_posts(post_id=None, keyword=None, page=None):
     args = []
     one = False
-    sql = """SELECT P.id, P.content, CL.name class, P.time, P.user_id, U.username, COUNT(C.id) count
+    sql = """SELECT P.id, P.content, CL.id class_id, CL.name class, P.time, P.user_id, U.username, COUNT(C.id) count
     FROM Posts P LEFT JOIN Comments C ON P.id = C.post_id, Users U, Classes CL
     WHERE P.user_id = U.id AND P.class_id = CL.id"""
     if post_id:

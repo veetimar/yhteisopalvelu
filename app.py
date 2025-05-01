@@ -227,11 +227,11 @@ def new_post():
         content = flask.request.form["content"]
         if not content or len(content) > 1000 or "class" not in flask.request.form:
             flask.abort(403)
+        cs = int(flask.request.form["class"])
         if not check_string(content):
-            filled = {"content": content}
+            filled = {"content": content, "class": cs}
             flask.flash("VIRHE: Postauksessa ei-salittuja merkkejä")
             return flask.render_template("new_post.html", classes=classes, filled=filled)
-        cs = flask.request.form["class"]
         user_id = flask.session["id"]
         try:
             data.new_post(content, user_id, cs)
@@ -249,17 +249,18 @@ def edit_post(post_id):
     if post["user_id"] != flask.session["id"]:
         flask.abort(403)
     if flask.request.method == "GET":
-        return flask.render_template("edit_post.html", post=post, classes=classes, filled={})
+        filled = {"content": post["content"], "class": post["class_id"]}
+        return flask.render_template("edit_post.html", post_id=post_id, classes=classes, filled=filled)
     if flask.request.method == "POST":
         check_csrf()
         content = flask.request.form["content"]
         if not content or len(content) > 1000 or "class" not in flask.request.form:
             flask.abort(403)
+        cs = int(flask.request.form["class"])
         if not check_string(content):
-            filled = {"content": content}
+            filled = {"content": content, "class": cs}
             flask.flash("VIRHE: Postauksessa ei-salittuja merkkejä")
-            return flask.render_template("edit_post.html", post=post, classes=classes, filled=filled)
-        cs = flask.request.form["class"]
+            return flask.render_template("edit_post.html", post_id=post_id, classes=classes, filled=filled)
         try:
             data.edit_post(content, cs, post_id)
         except sqlite3.IntegrityError:

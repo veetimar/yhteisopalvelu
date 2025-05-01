@@ -2,14 +2,14 @@
 {% block title %}Muokkaa postausta{% endblock %}
 {% block content %}
 <div class="form">
-  <form action="/edit_post/{{ post.id }}" method="post">
+  <form action="/edit_post/{{ post_id }}" method="post">
     <p>
       <label for="content">Tee tarvittavat muutokset</label>:<br />
-      <textarea id="content" name="content" rows="5" cols="50" maxlength="1000" required>{{ filled.content if filled else post.content }}</textarea>
+      <textarea id="content" name="content" rows="5" cols="50" maxlength="1000" required>{{ filled.content }}</textarea>
     </p>
     <p>
       {% for class in classes %}
-      <input type="radio" name="class" value="{{ class.id }}" {{ "checked" if post.class == class.name else "" }} required /> {{ class.name }}
+      <input type="radio" name="class" value="{{ class.id }}" {{ "checked" if filled.class == class.id else "" }} required /> {{ class.name }}
       {% endfor %}
     </p>
     <input type="submit" value="Muokkaa" />

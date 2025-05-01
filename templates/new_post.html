@@ -9,7 +9,7 @@
     </p>
     <p>
       {% for class in classes %}
-      <input type="radio" name="class" value="{{ class.id }}" required /> {{ class.name }}
+      <input type="radio" name="class" value="{{ class.id }}" {{ "checked" if filled.class == class.id else "" }} required /> {{ class.name }}
       {% endfor %}
     </p>
     <input type="submit" value="Julkaise" />
