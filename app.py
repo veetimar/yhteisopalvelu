@@ -153,7 +153,7 @@ def add_image():
         return flask.render_template("add_image.html")
     if flask.request.method == "POST":
         check_csrf()
-        file = flask.request.files["image"]
+        file = flask.request.files["new_image"]
         if not file:
             data.add_image(None, user_id)
             return flask.redirect(f"/user/{user_id}")
