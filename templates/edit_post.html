@@ -1,17 +1,19 @@
 {% extends "layout.html" %}
 {% block title %}Muokkaa postausta{% endblock %}
 {% block content %}
-<form action="/edit_post/{{ post.id }}" method="post">
-  <p>
-    <label for="content">Tee tarvittavat muutokset</label>:<br />
-    <textarea id="content" name="content" rows="5" cols="50" maxlength="1000" required>{{ filled.content if filled else post.content }}</textarea>
-  </p>
-  <p>
-    {% for class in classes %}
-    <input type="radio" name="class" value="{{ class.id }}" {{ "checked" if post.class == class.name else "" }} required /> {{ class.name }}
-    {% endfor %}
-  </p>
-  <input type="submit" value="Muokkaa" />
-  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
-</form>
+<div class="form">
+  <form action="/edit_post/{{ post.id }}" method="post">
+    <p>
+      <label for="content">Tee tarvittavat muutokset</label>:<br />
+      <textarea id="content" name="content" rows="5" cols="50" maxlength="1000" required>{{ filled.content if filled else post.content }}</textarea>
+    </p>
+    <p>
+      {% for class in classes %}
+      <input type="radio" name="class" value="{{ class.id }}" {{ "checked" if post.class == class.name else "" }} required /> {{ class.name }}
+      {% endfor %}
+    </p>
+    <input type="submit" value="Muokkaa" />
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+  </form>
+</div>
 {% endblock %}

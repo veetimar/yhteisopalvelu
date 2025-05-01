@@ -1,35 +1,37 @@
 {% extends "layout.html" %}
 {% block title %}Kirjaudu{% endblock %}
 {% block nav %}
-<p>
+<li>
   <a href="/">Etusivulle</a>
-</p>
+</li>
 {% endblock %}
 {% block content %}
-<form action="/register" method="post">
-  Tai
-  <input id="get" type="submit" value="Rekisteröidy" />
-  <input type="hidden" name="get" />
-  {% if next_page %}
-  <input type="hidden" name="next_page" value="{{ next_page }}" />
-  {% else %}
-  <input type="hidden" name="next_page" value="/" />
-  {% endif %}
-</form>
-<form action="/login" method="post">
-  <p>
-    <label for="username">Käyttäjätunnus</label>:<br />
-    <input type="text" id="username" name="username" maxlength="20" value="{{ filled.username }}" required />
-  </p>
-  <p>
-    <label for="password">Salasana</label>:<br />
-    <input type="password" id="password" name="password" maxlength="20" required />
-  </p>
-  <input type="submit" value="Kirjaudu sisään" />
-  {% if next_page %}
-  <input type="hidden" name="next_page" value="{{ next_page }}" />
-  {% else %}
-  <input type="hidden" name="next_page" value="/" />
-  {% endif %}
-</form>
+<div class="form">
+  <form action="/register" method="post">
+    Tai
+    <input id="get" type="submit" value="Rekisteröidy" />
+    <input type="hidden" name="get" />
+    {% if next_page %}
+    <input type="hidden" name="next_page" value="{{ next_page }}" />
+    {% else %}
+    <input type="hidden" name="next_page" value="/" />
+    {% endif %}
+  </form>
+  <form action="/login" method="post">
+    <p>
+      <label for="username">Käyttäjätunnus</label>:<br />
+      <input type="text" id="username" name="username" maxlength="20" value="{{ filled.username }}" required />
+    </p>
+    <p>
+      <label for="password">Salasana</label>:<br />
+      <input type="password" id="password" name="password" maxlength="20" required />
+    </p>
+    <input type="submit" value="Kirjaudu sisään" />
+    {% if next_page %}
+    <input type="hidden" name="next_page" value="{{ next_page }}" />
+    {% else %}
+    <input type="hidden" name="next_page" value="/" />
+    {% endif %}
+  </form>
+</div>
 {% endblock %}

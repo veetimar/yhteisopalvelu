@@ -1,12 +1,14 @@
 {% extends "layout.html" %}
 {% block title %}Uusi kommentti{% endblock %}
 {% block content %}
-<form action="/new_comment/{{ post_id }}" method="post">
-  <p>
-    <label for="content">Mitä mietteitä</label>:<br />
-    <textarea id="content" name="content" rows="5" cols="50" maxlength="1000" required>{{ filled.content }}</textarea>
-  </p>
-  <input type="submit" value="Julkaise" />
-  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
-</form>
+<div class="form">
+  <form action="/new_comment/{{ post_id }}" method="post">
+    <p>
+      <label for="content">Mitä mietteitä</label>:<br />
+      <textarea id="content" name="content" rows="5" cols="50" maxlength="1000" required>{{ filled.content }}</textarea>
+    </p>
+    <input type="submit" value="Julkaise" />
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+  </form>
+</div>
 {% endblock %}

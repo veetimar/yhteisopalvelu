@@ -6,44 +6,46 @@
     <link rel="stylesheet" href="/static/style.css" />
   </head>
   <body>
-    <div class="header">
-      <h1>
-        {{ self.title() }}
-      </h1>
-    </div>
-    <div class="nav">
-      <nav>
-        {% block nav %}
-        <p>
-          <a href="/">Etusivulle</a>
-        </p>
-        {% if session.username %}
-        <p>
-          Tervetuloa <a href="/user/{{ session.id }}">{{ session.username }}</a>
-        </p>
-        <p>
-          <a href="/logout">Kirjaudu ulos</a>
-        </p>
-        {% else %}
-        <p>
-          <a href="/register">Rekisteröidy</a>
-        </p>
-        <p>
-          <a href="/login">Kirjaudu sisään</a>
-        </p>
-        {% endif %}
-        {% endblock %}
-      </nav>
-      <hr />
+    <div class="top">
+      <div class="header">
+        <h1>
+          {{ self.title() }}
+        </h1>
+      </div>
+      <div class="nav">
+        <nav>
+          <ul>
+            {% block nav %}
+            <li>
+              <a href="/">Etusivulle</a>
+            </li>
+            {% if session.username %}
+            <li>
+              Käyttäjä <a href="/user/{{ session.id }}">{{ session.username }}</a>
+            </li>
+            <li>
+              <a href="/logout">Kirjaudu ulos</a>
+            </li>
+            {% else %}
+            <li>
+              <a href="/register">Rekisteröidy</a>
+            </li>
+            <li>
+              <a href="/login">Kirjaudu sisään</a>
+            </li>
+            {% endif %}
+            {% endblock %}
+          </ul>
+        </nav>
+      </div>
     </div>
     {% if get_flashed_messages() %}
-    <div class="messages">
+    <div class="alert">
       {% for message in get_flashed_messages() %}
       <p>
         {{ message }}
       </p>
       {% endfor %}
-      <hr />
     </div>
     {% endif %}
     <div class="content">

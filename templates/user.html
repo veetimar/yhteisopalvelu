@@ -1,5 +1,22 @@
 {% extends "layout.html" %}
 {% block title %}Käyttäjä {{ user.username }}{% endblock %}
+{% block nav %}
+<li>
+  <a href="/">Etusivulle</a>
+</li>
+{% if session.username %}
+<li>
+  <a href="/logout">Kirjaudu ulos</a>
+</li>
+{% else %}
+<li>
+  <a href="/register">Rekisteröidy</a>
+</li>
+<li>
+  <a href="/login">Kirjaudu sisään</a>
+</li>
+{% endif %}
+{% endblock %}
 {% block content %}
 <div class="user">
   <p>
@@ -18,7 +35,6 @@
 </div>
 {% if session.username == user.username %}
 <div class="admin">
-  <hr />
   <h3>Ylläpitopaneeli</h3>
   <p>
     <a href="/add_image">Lisää/vaihda/poista profiilikuva</a>

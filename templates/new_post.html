@@ -1,17 +1,19 @@
 {% extends "layout.html" %}
 {% block title %}Uusi postaus{% endblock %}
 {% block content %}
-<form action="/new_post" method="post">
-  <p>
-    <label for="content">Mitä mietteitä</label>:<br />
-    <textarea id="content" name="content" rows="5" cols="50" maxlength="1000" required>{{ filled.content }}</textarea>
-  </p>
-  <p>
-    {% for class in classes %}
-    <input type="radio" name="class" value="{{ class.id }}" required /> {{ class.name }}
-    {% endfor %}
-  </p>
-  <input type="submit" value="Julkaise" />
-  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
-</form>
+<div class="form">
+  <form action="/new_post" method="post">
+    <p>
+      <label for="content">Mitä mietteitä</label>:<br />
+      <textarea id="content" name="content" rows="5" cols="50" maxlength="1000" required>{{ filled.content }}</textarea>
+    </p>
+    <p>
+      {% for class in classes %}
+      <input type="radio" name="class" value="{{ class.id }}" required /> {{ class.name }}
+      {% endfor %}
+    </p>
+    <input type="submit" value="Julkaise" />
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+  </form>
+</div>
 {% endblock %}
