@@ -32,19 +32,19 @@
   <p>
     {{ user.comment_count }} kommenttia
   </p>
+  {% if session.username == user.username %}
+  <div class="admin">
+    <h3>Ylläpitopaneeli</h3>
+    <p>
+      <a href="/add_image">Lisää/vaihda/poista profiilikuva</a>
+    </p>
+    <p>
+      <a href="/change_password">Vaihda salasana</a>
+    </p>
+    <p>
+      <a href="/delete_user">Poista käyttäjä</a>
+    </p>
+  </div>
+  {% endif %}
 </div>
-{% if session.username == user.username %}
-<div class="admin">
-  <h3>Ylläpitopaneeli</h3>
-  <p>
-    <a href="/add_image">Lisää/vaihda/poista profiilikuva</a>
-  </p>
-  <p>
-    <a href="/change_password">Vaihda salasana</a>
-  </p>
-  <p>
-    <a href="/delete_user">Poista käyttäjä</a>
-  </p>
-</div>
-{% endif %}
 {% endblock %}
