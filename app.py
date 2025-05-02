@@ -165,7 +165,10 @@ def logout():
 
 @app.route("/user/<int:user_id>")
 def user(user_id):
-    usr = data.get_users(user_id=user_id)
+    try:
+        usr = data.get_users(user_id=user_id)
+    except OverflowError:
+        flask.abort(404)
     if not usr:
         flask.abort(404)
     return flask.render_template("user.html", user=usr)
@@ -173,7 +176,10 @@ def user(user_id):
 @app.route("/add_image/<int:user_id>", methods=["GET", "POST"])
 @require_login
 def add_image(user_id):
-    usr = data.get_users(user_id=user_id)
+    try:
+        usr = data.get_users(user_id=user_id)
+    except OverflowError:
+        flask.abort(404)
     if not usr:
         flask.abort(404)
     check_permission(user_id)
@@ -196,7 +202,10 @@ def add_image(user_id):
 
 @app.route("/show_image/<int:user_id>")
 def show_image(user_id):
-    image = data.get_image(user_id)
+    try:
+        image = data.get_image(user_id)
+    except OverflowError:
+        flask.abort(404)
     if not image:
         flask.abort(404)
     response = flask.make_response(image)
@@ -206,7 +215,10 @@ def show_image(user_id):
 @app.route("/change_password/<int:user_id>", methods=["GET", "POST"])
 @require_login
 def change_password(user_id):
-    usr = data.get_users(user_id=user_id)
+    try:
+        usr = data.get_users(user_id=user_id)
+    except OverflowError:
+        flask.abort(404)
     if not usr:
         flask.abort(404)
     check_permission(user_id)
@@ -237,7 +249,10 @@ def change_password(user_id):
 @app.route("/delete_user/<int:user_id>", methods=["GET", "POST"])
 @require_login
 def delete_user(user_id):
-    usr = data.get_users(user_id=user_id)
+    try:
+        usr = data.get_users(user_id=user_id)
+    except OverflowError:
+        flask.abort(404)
     if not usr:
         flask.abort(404)
     check_permission(user_id)
@@ -279,11 +294,14 @@ def new_post():
 @app.route("/edit_post/<int:post_id>", methods=["GET", "POST"])
 @require_login
 def edit_post(post_id):
-    post = data.get_posts(post_id=post_id)
-    classes = data.get_classes()
+    try:
+        post = data.get_posts(post_id=post_id)
+    except OverflowError:
+        flask.abort(404)
     if not post:
         flask.abort(404)
     check_permission(post["user_id"])
+    classes = data.get_classes()
     if flask.request.method == "GET":
         filled = {"content": post["content"], "class": post["class_id"]}
         return flask.render_template("edit_post.html", post_id=post_id, classes=classes, filled=filled)
@@ -307,7 +325,10 @@ def edit_post(post_id):
 @app.route("/delete_post/<int:post_id>", methods=["GET", "POST"])
 @require_login
 def delete_post(post_id):
-    post = data.get_posts(post_id=post_id)
+    try:
+        post = data.get_posts(post_id=post_id)
+    except OverflowError:
+        flask.abort(404)
     if not post:
         flask.abort(404)
     check_permission(post["user_id"])
@@ -322,7 +343,10 @@ def delete_post(post_id):
 @app.route("/comments/<int:post_id>", methods=["GET", "POST"])
 @app.route("/comments/<int:post_id>/<int:page>", methods=["GET", "POST"])
 def comments(post_id, page=1):
-    post = data.get_posts(post_id=post_id)
+    try:
+        post = data.get_posts(post_id=post_id)
+    except OverflowError:
+        flask.abort(404)
     if not post:
         flask.abort(404)
     keyword = flask.request.form["keyword"] if "keyword" in flask.request.form else None
@@ -350,7 +374,10 @@ def comments(post_id, page=1):
 @app.route("/new_comment/<int:post_id>", methods=["GET", "POST"])
 @require_login
 def new_comment(post_id):
-    post = data.get_posts(post_id=post_id)
+    try:
+        post = data.get_posts(post_id=post_id)
+    except OverflowError:
+        flask.abort(404)
     if not post:
         flask.abort(404)
     if flask.request.method == "GET":
@@ -372,7 +399,10 @@ def new_comment(post_id):
 @app.route("/edit_comment/<int:comment_id>", methods=["GET", "POST"])
 @require_login
 def edit_domment(comment_id):
-    comment = data.get_comments(comment_id=comment_id)
+    try:
+        comment = data.get_comments(comment_id=comment_id)
+    except OverflowError:
+        flask.abort(404)
     if not comment:
         flask.abort(404)
     check_permission(comment["user_id"])
@@ -394,7 +424,10 @@ def edit_domment(comment_id):
 @app.route("/delete_comment/<int:comment_id>", methods=["GET", "POST"])
 @require_login
 def delete_comment(comment_id):
-    comment = data.get_comments(comment_id=comment_id)
+    try:
+        comment = data.get_comments(comment_id=comment_id)
+    except OverflowError:
+        flask.abort(404)
     if not comment:
         flask.abort(404)
     check_permission(comment["user_id"])
