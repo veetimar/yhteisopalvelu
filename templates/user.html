@@ -32,6 +32,14 @@
   <p>
     {{ user.comment_count }} kommenttia
   </p>
+  {% if user.post_count %}
+  <form action="/" method="post">
+    <p>
+      <input type="hidden" name="keyword" value="{{ user.username }}" />
+      <input id="get" type="submit" name="username" value="Näytä käyttäjän postaukset" />
+    </p>
+  </form>
+  {% endif %}
   {% if session.username == user.username %}
   <div class="admin">
     <h3>Ylläpitopaneeli</h3>
