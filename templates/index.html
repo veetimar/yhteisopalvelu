@@ -31,14 +31,15 @@
   <form action="/" method="post">
     <p>
       <label for="keyword">Etsi postauksia</label>:<br />
-      <input type="text" id="keyword" name="keyword" maxlength="1000" required />
-      <input type="submit" name = "search" value="Etsi" />
+      <input type="text" id="keyword" name="keyword" value="{{ keyword[0] if keyword }}" maxlength="1000" required />
+      <input type="submit" name="content" value="sisällön perusteella" />
+      <input type="submit" name="username" value="käyttäjänimellä" />
     </p>
   </form>
   {% if keyword %}
   <form action="/" method="post">
     <p>
-      Tulokset haulle "{{ keyword }}":
+      Tulokset haulle "{{ keyword[0] }}":
       <input type="submit" name="cancel" value="Peruuta" />
     </p>
   </form>
@@ -85,7 +86,8 @@
     <input type="submit" formaction="/{{ page.count }}" value="&gt;&gt;" />
     {% endif %}
     {% if keyword %}
-    <input type="hidden" name="keyword" value="{{ keyword }}" />
+    <input type="hidden" name="keyword" value="{{ keyword[0] }}" />
+    <input type="hidden" name="{{ keyword[1] }}" />
     {% endif %}
   </form>
 </div>
