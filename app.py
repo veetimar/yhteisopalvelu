@@ -43,14 +43,18 @@ def require_login(f):
         return f(*args, **kwargs)
     return wrapper
 
-def check_string(string):
-    return all(char in ASCII for char in string)
-
 def check_csrf():
     if "csrf_token" not in flask.request.form or "csrf_token" not in flask.session:
         flask.abort(403)
     if flask.request.form["csrf_token"] != flask.session["csrf_token"]:
         flask.abort(403)
+
+def check_keys(keys):
+    if not all(key in flask.request.form for key in keys):
+        flask.abort(403)
+
+def check_string(string):
+    return all(char in ASCII for char in string)
 
 def create_session(user_id, username):
     flask.session["id"] = user_id
@@ -87,9 +91,11 @@ def register():
     if flask.request.method == "GET":
         return flask.render_template("register.html", filled={}, next_page=flask.request.referrer)
     if flask.request.method == "POST":
+        check_keys(["next_page"])
         next_page = flask.request.form["next_page"]
         if "get" in flask.request.form:
             return flask.render_template("register.html", filled={}, next_page=next_page)
+        check_keys(["username", "password1", "password2"])
         username = flask.request.form["username"]
         password1 = flask.request.form["password1"]
         password2 = flask.request.form["password2"]
@@ -116,9 +122,11 @@ def login():
     if flask.request.method == "GET":
         return flask.render_template("login.html", filled={}, next_page=flask.request.referrer)
     if flask.request.method == "POST":
+        check_keys(["next_page"])
         next_page = flask.request.form["next_page"]
         if "get" in flask.request.form:
             return flask.render_template("login.html", filled={}, next_page=next_page)
+        check_keys(["username", "password"])
         username = flask.request.form["username"]
         password = flask.request.form["password"]
         if not username or not password or len(username) > 20 or len(password) > 20:
@@ -189,6 +197,7 @@ def change_password():
         return flask.render_template("change_password.html")
     if flask.request.method == "POST":
         check_csrf()
+        check_keys(["old_password", "password1", "password2"])
         old_password = flask.request.form["old_password"]
         password1 = flask.request.form["password1"]
         password2 = flask.request.form["password2"]
@@ -231,8 +240,9 @@ def new_post():
         return flask.render_template("new_post.html", classes=classes, filled={})
     if flask.request.method == "POST":
         check_csrf()
+        check_keys(["content", "class"])
         content = flask.request.form["content"]
-        if not content or len(content) > 1000 or "class" not in flask.request.form:
+        if not content or len(content) > 1000:
             flask.abort(403)
         cs = int(flask.request.form["class"])
         if not check_string(content):
@@ -260,8 +270,9 @@ def edit_post(post_id):
         return flask.render_template("edit_post.html", post_id=post_id, classes=classes, filled=filled)
     if flask.request.method == "POST":
         check_csrf()
+        check_keys(["content", "class"])
         content = flask.request.form["content"]
-        if not content or len(content) > 1000 or "class" not in flask.request.form:
+        if not content or len(content) > 1000:
             flask.abort(403)
         cs = int(flask.request.form["class"])
         if not check_string(content):
@@ -328,6 +339,7 @@ def new_comment(post_id):
         return flask.render_template("new_comment.html", post_id=post_id, filled={})
     if flask.request.method == "POST":
         check_csrf()
+        check_keys(["content"])
         content = flask.request.form["content"]
         if not content or len(content) > 1000:
             flask.abort(403)
@@ -351,6 +363,7 @@ def edit_domment(comment_id):
         return flask.render_template("edit_comment.html", comment=comment, filled={})
     if flask.request.method == "POST":
         check_csrf()
+        check_keys(["content"])
         content = flask.request.form["content"]
         if not content or len(content) > 1000:
             flask.abort(403)
