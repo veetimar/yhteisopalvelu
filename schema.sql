@@ -22,4 +22,7 @@ CREATE TABLE Classes (
     id INTEGER PRIMARY KEY,
     name TEXT NOT NULL
 );
+CREATE INDEX idx_username ON Users (username);
+CREATE INDEX idx_user_posts ON Posts (user_id);
+CREATE INDEX idx_user_comments ON Comments (user_id);
 CREATE INDEX idx_post_comments ON Comments (post_id);
