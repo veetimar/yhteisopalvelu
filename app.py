@@ -65,8 +65,8 @@ def create_session(user_id, username):
 @app.route("/<int:page>", methods=["GET", "POST"])
 def index(page=1):
     keyword = flask.request.form["keyword"] if "keyword" in flask.request.form else None
-    if keyword is not None:
-        if len(keyword) == 0 or len(keyword) > 1000:
+    if keyword:
+        if len(keyword) > 1000:
             flask.abort(403)
         if "content" in flask.request.form and "username" not in flask.request.form:
             keyword = (keyword, "content")
@@ -242,7 +242,7 @@ def new_post():
         check_csrf()
         check_keys(["content", "class"])
         content = flask.request.form["content"]
-        if not content or len(content) > 1000:
+        if not 0 < len(content) <= 1000:
             flask.abort(403)
         cs = int(flask.request.form["class"])
         if not check_string(content):
@@ -272,7 +272,7 @@ def edit_post(post_id):
         check_csrf()
         check_keys(["content", "class"])
         content = flask.request.form["content"]
-        if not content or len(content) > 1000:
+        if not 0 < len(content) <= 1000:
             flask.abort(403)
         cs = int(flask.request.form["class"])
         if not check_string(content):
@@ -308,8 +308,8 @@ def comments(post_id, page=1):
     if not post:
         flask.abort(404)
     keyword = flask.request.form["keyword"] if "keyword" in flask.request.form else None
-    if keyword is not None:
-        if len(keyword) == 0 or len(keyword) > 1000:
+    if keyword:
+        if len(keyword) > 1000:
             flask.abort(403)
         if "content" in flask.request.form and "username" not in flask.request.form:
             keyword = (keyword, "content")
@@ -341,7 +341,7 @@ def new_comment(post_id):
         check_csrf()
         check_keys(["content"])
         content = flask.request.form["content"]
-        if not content or len(content) > 1000:
+        if not 0 < len(content) <= 1000:
             flask.abort(403)
         if not check_string(content):
             filled = {"content": content}
@@ -365,7 +365,7 @@ def edit_domment(comment_id):
         check_csrf()
         check_keys(["content"])
         content = flask.request.form["content"]
-        if not content or len(content) > 1000:
+        if not 0 < len(content) <= 1000:
             flask.abort(403)
         if not check_string(content):
             filled = {"content": content}
