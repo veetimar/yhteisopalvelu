@@ -7,7 +7,7 @@ def get_users(username=None, user_id=None):
         raise ValueError("cannot process both username and user_id")
     args = []
     one = False
-    sql = """SELECT U.id, U.username, U.pwhash,
+    sql = """SELECT U.id, U.username, U.pwhash, U.admin,
     (SELECT COUNT(*) FROM Posts P WHERE P.user_id = U.id) post_count,
     (SELECT COUNT(*) FROM Comments C WHERE C.user_id = U.id) comment_count,
     image IS NOT NULL has_image
@@ -143,6 +143,11 @@ def change_password(pwhash, user_id):
     sql = "UPDATE Users SET pwhash = ? WHERE id = ?"
     with database.dbase as db:
         return db.execute(sql, args=[pwhash, user_id])
+
+def make_admin(user_id):
+    sql = "UPDATE Users SET admin = 1 WHERE id = ?"
+    with database.dbase as db:
+        return db.execute(sql, args=[user_id])
 
 def delete_user(user_id):
     sql = "DELETE FROM Users WHERE id = ?"

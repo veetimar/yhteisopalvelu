@@ -60,7 +60,7 @@
     <p>
       <a href="/comments/{{ post.id }}">{{ post.count }} kommenttia</a>
     </p>
-    {% if post.username == session.username %}
+    {% if post.username == session.username or session.admin %}
     <p>
       <a href="/edit_post/{{ post.id }}">Muokkaa</a> |
       <a href="/delete_post/{{ post.id }}">Poista</a>

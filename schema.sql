@@ -2,6 +2,7 @@ CREATE TABLE Users (
     id INTEGER PRIMARY KEY,
     username TEXT NOT NULL UNIQUE,
     pwhash TEXT NOT NULL,
+    admin INTEGER NOT NULL DEFAULT 0,
     image BLOB
 );
 CREATE TABLE Posts (

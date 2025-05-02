@@ -53,12 +53,17 @@ def check_keys(keys):
     if not all(key in flask.request.form for key in keys):
         flask.abort(403)
 
+def check_permission(user_id):
+    if user_id != flask.session["id"] and not flask.session["admin"]:
+        flask.abort(403)
+
 def check_string(string):
     return all(char in ASCII for char in string)
 
-def create_session(user_id, username):
+def create_session(user_id, username, admin=False):
     flask.session["id"] = user_id
     flask.session["username"] = username
+    flask.session["admin"] = admin
     flask.session["csrf_token"] = secrets.token_hex()
 
 @app.route("/", methods=["GET", "POST"])
@@ -114,7 +119,11 @@ def register():
         except sqlite3.IntegrityError:
             flask.flash("VIRHE: Käyttäjätunnus on varattu")
             return flask.render_template("register.html", filled=filled, next_page=next_page)
-        create_session(user_id, username)
+        if username == "admin":
+            data.make_admin(user_id)
+            create_session(user_id, username, admin=True)
+        else:
+            create_session(user_id, username)
         return flask.redirect(next_page)
 
 @app.route("/login", methods=["GET", "POST"])
@@ -143,13 +152,14 @@ def login():
         if not security.check_password_hash(pwhash, password):
             flask.flash("VIRHE: Väärä salasana")
             return flask.render_template("login.html", filled=filled, next_page=next_page)
-        create_session(usr["id"], username)
+        create_session(usr["id"], username, admin=bool(usr["admin"]))
         return flask.redirect(next_page)
 
 @app.route("/logout")
 def logout():
     flask.session.pop("id", None)
     flask.session.pop("username", None)
+    flask.session.pop("admin", None)
     flask.session.pop("csrf_token", None)
     return flask.redirect("/")
 
@@ -160,12 +170,15 @@ def user(user_id):
         flask.abort(404)
     return flask.render_template("user.html", user=usr)
 
-@app.route("/add_image", methods=["GET", "POST"])
+@app.route("/add_image/<int:user_id>", methods=["GET", "POST"])
 @require_login
-def add_image():
-    user_id = flask.session["id"]
+def add_image(user_id):
+    usr = data.get_users(user_id=user_id)
+    if not usr:
+        flask.abort(404)
+    check_permission(user_id)
     if flask.request.method == "GET":
-        return flask.render_template("add_image.html")
+        return flask.render_template("add_image.html", user_id=user_id)
     if flask.request.method == "POST":
         check_csrf()
         file = flask.request.files["new_image"]
@@ -177,7 +190,7 @@ def add_image():
         image = file.read()
         if len(image) > 1000 * 1024:
             flask.flash("VIRHE: Liian suuri kuva")
-            return flask.render_template("add_image.html")
+            return flask.render_template("add_image.html", user_id=user_id)
         data.add_image(image, user_id)
         return flask.redirect(f"/user/{user_id}")
 
@@ -190,11 +203,15 @@ def show_image(user_id):
     response.headers.set("Content-Type", "image/jpeg")
     return response
 
-@app.route("/change_password", methods=["GET", "POST"])
+@app.route("/change_password/<int:user_id>", methods=["GET", "POST"])
 @require_login
-def change_password():
+def change_password(user_id):
+    usr = data.get_users(user_id=user_id)
+    if not usr:
+        flask.abort(404)
+    check_permission(user_id)
     if flask.request.method == "GET":
-        return flask.render_template("change_password.html")
+        return flask.render_template("change_password.html", user_id=user_id)
     if flask.request.method == "POST":
         check_csrf()
         check_keys(["old_password", "password1", "password2"])
@@ -205,30 +222,33 @@ def change_password():
             flask.abort(403)
         if password1 != password2:
             flask.flash("VIRHE: Salasanat eivät täsmää")
-            return flask.render_template("change_password.html")
+            return flask.render_template("change_password.html", user_id=user_id)
         if old_password == password1:
             flask.flash("VIRHE: Salasana on sama kuin aiemmin")
-            return flask.render_template("change_password.html")
-        user_id = flask.session["id"]
-        usr = data.get_users(user_id=user_id)
+            return flask.render_template("change_password.html", user_id=user_id)
         if not security.check_password_hash(usr["pwhash"], old_password):
             flask.flash("VIRHE: Väärä salasana")
-            return flask.render_template("change_password.html")
+            return flask.render_template("change_password.html", user_id=user_id)
         pwhash = security.generate_password_hash(password1)
         data.change_password(pwhash, user_id)
         flask.flash("Salasanan vaihto onnistui")
         return flask.redirect(f"/user/{user_id}")
 
-@app.route("/delete_user", methods=["GET", "POST"])
+@app.route("/delete_user/<int:user_id>", methods=["GET", "POST"])
 @require_login
-def delete_user():
+def delete_user(user_id):
+    usr = data.get_users(user_id=user_id)
+    if not usr:
+        flask.abort(404)
+    check_permission(user_id)
     if flask.request.method == "GET":
-        return flask.render_template("delete_user.html")
+        return flask.render_template("delete_user.html", user_id=user_id)
     if flask.request.method == "POST":
         check_csrf()
-        user_id = flask.session["id"]
         if "yes" in flask.request.form:
             data.delete_user(user_id)
+            if user_id != flask.session["id"]:
+                return flask.redirect("/")
             return flask.redirect("/logout")
         return flask.redirect(f"/user/{user_id}")
 
@@ -263,8 +283,7 @@ def edit_post(post_id):
     classes = data.get_classes()
     if not post:
         flask.abort(404)
-    if post["user_id"] != flask.session["id"]:
-        flask.abort(403)
+    check_permission(post["user_id"])
     if flask.request.method == "GET":
         filled = {"content": post["content"], "class": post["class_id"]}
         return flask.render_template("edit_post.html", post_id=post_id, classes=classes, filled=filled)
@@ -291,8 +310,7 @@ def delete_post(post_id):
     post = data.get_posts(post_id=post_id)
     if not post:
         flask.abort(404)
-    if post["user_id"] != flask.session["id"]:
-        flask.abort(403)
+    check_permission(post["user_id"])
     if flask.request.method == "GET":
         return flask.render_template("delete_post.html", post_id=post_id)
     if flask.request.method == "POST":
@@ -357,8 +375,7 @@ def edit_domment(comment_id):
     comment = data.get_comments(comment_id=comment_id)
     if not comment:
         flask.abort(404)
-    if comment["user_id"] != flask.session["id"]:
-        flask.abort(403)
+    check_permission(comment["user_id"])
     if flask.request.method == "GET":
         return flask.render_template("edit_comment.html", comment=comment, filled={})
     if flask.request.method == "POST":
@@ -380,8 +397,7 @@ def delete_comment(comment_id):
     comment = data.get_comments(comment_id=comment_id)
     if not comment:
         flask.abort(404)
-    if comment["user_id"] != flask.session["id"]:
-        flask.abort(403)
+    check_permission(comment["user_id"])
     if flask.request.method == "GET":
         return flask.render_template("delete_comment.html", comment_id=comment_id)
     if flask.request.method == "POST":

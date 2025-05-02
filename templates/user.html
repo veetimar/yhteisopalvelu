@@ -40,17 +40,17 @@
     </p>
   </form>
   {% endif %}
-  {% if session.username == user.username %}
+  {% if session.username == user.username or session.admin %}
   <div class="admin">
     <h3>Ylläpitopaneeli</h3>
     <p>
-      <a href="/add_image">Lisää/vaihda/poista profiilikuva</a>
+      <a href="/add_image/{{ user.id }}">Lisää/vaihda/poista profiilikuva</a>
     </p>
     <p>
-      <a href="/change_password">Vaihda salasana</a>
+      <a href="/change_password/{{ user.id }}">Vaihda salasana</a>
     </p>
     <p>
-      <a href="/delete_user">Poista käyttäjä</a>
+      <a href="/delete_user/{{ user.id }}">Poista käyttäjä</a>
     </p>
   </div>
   {% endif %}

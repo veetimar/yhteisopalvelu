@@ -48,7 +48,7 @@
     <p>
       {{ comment.content | show_lines }}
     </p>
-    {% if comment.username == session.username %}
+    {% if comment.username == session.username or session.admin %}
     <p>
       <a href="/edit_comment/{{ comment.id}}">Muokkaa</a> |
       <a href="/delete_comment/{{ comment.id }}">Poista</a>

@@ -2,9 +2,9 @@
 {% block title %}Vahvista{% endblock %}
 {% block content %}
 <div class="form">
-  <form action="/delete_user" method="post">
+  <form action="/delete_user/{{ user_id }}" method="post">
     <p>
-      Haluatko varmasti poistaa käyttäjän {{ session.username }}?
+      Haluatko varmasti poistaa käyttäjän?
     </p>
     <input type="submit" name="no" value="Ei" />
     <input type="submit" name="yes" value="Kyllä" />
