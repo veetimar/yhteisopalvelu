@@ -85,10 +85,10 @@ def index(page=1):
     page = {"page": page, "size": PAGE_SIZE, "count": page_count} if page_count > 1 else None
     posts = data.get_posts(keyword=keyword, page=page)
     if flask.request.method == "GET":
-        return flask.render_template("index.html", posts=posts, page=page)
+        return flask.render_template("index.html", posts=posts, page=page, keyword=keyword)
     if flask.request.method == "POST":
         if "cancel" in flask.request.form:
-            return flask.render_template("index.html", posts=posts, page=page)
+            return flask.render_template("index.html", posts=posts, page=page, keyword=keyword)
         return flask.render_template("index.html", posts=posts, page=page, keyword=keyword)
 
 @app.route("/register", methods=["GET", "POST"])
@@ -365,10 +365,10 @@ def comments(post_id, page=1):
     page = {"page": page, "size": PAGE_SIZE, "count": page_count} if page_count > 1 else None
     cmmnts = data.get_comments(post_id=post_id, keyword=keyword, page=page)
     if flask.request.method == "GET":
-        return flask.render_template("comments.html", post=post, comments=cmmnts, page=page)
+        return flask.render_template("comments.html", post=post, comments=cmmnts, page=page, keyword=keyword)
     if flask.request.method == "POST":
         if "cancel" in flask.request.form:
-            return flask.render_template("comments.html", post=post, comments=cmmnts, page=page)
+            return flask.render_template("comments.html", post=post, comments=cmmnts, page=page, keyword=keyword)
         return flask.render_template("comments.html", post=post, comments=cmmnts, page=page, keyword=keyword)
 
 @app.route("/new_comment/<int:post_id>", methods=["GET", "POST"])
