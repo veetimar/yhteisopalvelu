@@ -155,7 +155,8 @@ def delete_user(user_id):
         return db.execute(sql, args=[user_id])
 
 def new_post(content, user_id, cs):
-    sql = "INSERT INTO Posts (content, time, user_id, class_id) VALUES (?, datetime('now', 'localtime'), ?, ?)"
+    sql = """INSERT INTO Posts (content, time, user_id, class_id)
+    VALUES (?, datetime('now', 'localtime'), ?, ?)"""
     with database.dbase as db:
         return db.execute(sql, args=[content, user_id, cs])
 
@@ -170,7 +171,8 @@ def delete_post(post_id):
         return db.execute(sql, args=[post_id])
 
 def new_comment(content, user_id, post_id):
-    sql = "INSERT INTO Comments (content, time, user_id, post_id) VALUES (?, datetime('now', 'localtime'), ?, ?)"
+    sql = """INSERT INTO Comments (content, time, user_id, post_id)
+    VALUES (?, datetime('now', 'localtime'), ?, ?)"""
     with database.dbase as db:
         return db.execute(sql, args=[content, user_id, post_id])
 
