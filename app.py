@@ -49,9 +49,13 @@ def check_csrf():
     if flask.request.form["csrf_token"] != flask.session["csrf_token"]:
         flask.abort(403)
 
-def check_keys(keys):
-    if not all(key in flask.request.form for key in keys):
-        flask.abort(403)
+def get_keys(keys):
+    values = []
+    for key in keys:
+        if key not in flask.request.form:
+            flask.abort(403)
+        values.append(flask.request.form[key])
+    return values[0] if len(values) == 1 else values
 
 def check_permission(user_id):
     if user_id != flask.session["id"] and not flask.session["admin"]:
@@ -98,14 +102,10 @@ def register():
     if flask.request.method == "GET":
         return flask.render_template("register.html", filled={}, next_page=flask.request.referrer)
     if flask.request.method == "POST":
-        check_keys(["next_page"])
-        next_page = flask.request.form["next_page"]
+        next_page = get_keys(["next_page"])
         if "get" in flask.request.form:
             return flask.render_template("register.html", filled={}, next_page=next_page)
-        check_keys(["username", "password1", "password2"])
-        username = flask.request.form["username"]
-        password1 = flask.request.form["password1"]
-        password2 = flask.request.form["password2"]
+        username, password1, password2 = get_keys(["username", "password1", "password2"])
         if not (username and password1 and password2) or max(len(username), len(password1), len(password2)) > 20:
             flask.abort(403)
         filled = {"username": username}
@@ -133,13 +133,10 @@ def login():
     if flask.request.method == "GET":
         return flask.render_template("login.html", filled={}, next_page=flask.request.referrer)
     if flask.request.method == "POST":
-        check_keys(["next_page"])
-        next_page = flask.request.form["next_page"]
+        next_page = get_keys(["next_page"])
         if "get" in flask.request.form:
             return flask.render_template("login.html", filled={}, next_page=next_page)
-        check_keys(["username", "password"])
-        username = flask.request.form["username"]
-        password = flask.request.form["password"]
+        username, password = get_keys(["username", "password"])
         if not username or not password or len(username) > 20 or len(password) > 20:
             flask.abort(403)
         filled = {"username": username}
@@ -228,10 +225,7 @@ def change_password(user_id):
         return flask.render_template("change_password.html", user_id=user_id)
     if flask.request.method == "POST":
         check_csrf()
-        check_keys(["old_password", "password1", "password2"])
-        old_password = flask.request.form["old_password"]
-        password1 = flask.request.form["password1"]
-        password2 = flask.request.form["password2"]
+        old_password, password1, password2 = get_keys(["old_password", "password1", "password2"])
         if not (old_password and password1 and password2) or max(len(old_password), len(password1), len(password2)) > 20:
             flask.abort(403)
         if password1 != password2:
@@ -277,11 +271,9 @@ def new_post():
         return flask.render_template("new_post.html", classes=classes, filled={})
     if flask.request.method == "POST":
         check_csrf()
-        check_keys(["content", "class"])
-        content = flask.request.form["content"]
+        content, cs = get_keys(["content", "class"])
         if not 0 < len(content) <= 1000:
             flask.abort(403)
-        cs = int(flask.request.form["class"])
         if not check_string(content):
             filled = {"content": content, "class": cs}
             flask.flash("VIRHE: Postauksessa ei-sallittuja merkkejä")
@@ -309,11 +301,9 @@ def edit_post(post_id):
         return flask.render_template("edit_post.html", post_id=post_id, classes=classes, filled=filled)
     if flask.request.method == "POST":
         check_csrf()
-        check_keys(["content", "class"])
-        content = flask.request.form["content"]
+        content, cs = get_keys(["content", "class"])
         if not 0 < len(content) <= 1000:
             flask.abort(403)
-        cs = int(flask.request.form["class"])
         if not check_string(content):
             filled = {"content": content, "class": cs}
             flask.flash("VIRHE: Postauksessa ei-sallittuja merkkejä")
@@ -388,8 +378,7 @@ def new_comment(post_id):
         return flask.render_template("new_comment.html", post_id=post_id, filled={})
     if flask.request.method == "POST":
         check_csrf()
-        check_keys(["content"])
-        content = flask.request.form["content"]
+        content = get_keys(["content"])
         if not 0 < len(content) <= 1000:
             flask.abort(403)
         if not check_string(content):
@@ -414,8 +403,7 @@ def edit_domment(comment_id):
         return flask.render_template("edit_comment.html", comment=comment, filled={})
     if flask.request.method == "POST":
         check_csrf()
-        check_keys(["content"])
-        content = flask.request.form["content"]
+        content = get_keys(["content"])
         if not 0 < len(content) <= 1000:
             flask.abort(403)
         if not check_string(content):
