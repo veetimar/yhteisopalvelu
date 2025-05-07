@@ -69,9 +69,9 @@ def create_session(user_id, username, admin=False):
 @app.route("/", methods=["GET", "POST"])
 @app.route("/<int:page>", methods=["GET", "POST"])
 def index(page=1):
-    keyword = flask.request.form["keyword"] if "keyword" in flask.request.form else None
-    if keyword:
-        if len(keyword) > 1000:
+    if "keyword" in flask.request.form:
+        keyword = flask.request.form["keyword"]
+        if not 0 < len(keyword) <= 1000:
             flask.abort(403)
         if "content" in flask.request.form and "username" not in flask.request.form:
             keyword = (keyword, "content")
@@ -79,6 +79,8 @@ def index(page=1):
             keyword = (keyword, "username")
         else:
             flask.abort(403)
+    else:
+        keyword = None
     page_count = data.get_post_pages(PAGE_SIZE, keyword=keyword)
     if page < 1 or page > page_count:
         flask.abort(404)
@@ -349,9 +351,9 @@ def comments(post_id, page=1):
         flask.abort(404)
     if not post:
         flask.abort(404)
-    keyword = flask.request.form["keyword"] if "keyword" in flask.request.form else None
-    if keyword:
-        if len(keyword) > 1000:
+    if "keyword" in flask.request.form:
+        keyword = flask.request.form["keyword"]
+        if not 0 < len(keyword) <= 1000:
             flask.abort(403)
         if "content" in flask.request.form and "username" not in flask.request.form:
             keyword = (keyword, "content")
@@ -359,6 +361,8 @@ def comments(post_id, page=1):
             keyword = (keyword, "username")
         else:
             flask.abort(403)
+    else:
+        keyword = None
     page_count = data.get_comment_pages(post_id, PAGE_SIZE, keyword=keyword)
     if page < 1 or page > page_count:
         flask.abort(404)
