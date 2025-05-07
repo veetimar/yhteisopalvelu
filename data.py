@@ -3,7 +3,7 @@ import math
 import database
 
 def get_users(username=None, user_id=None):
-    if username and user_id:
+    if username is not None and user_id is not None:
         raise ValueError("cannot process both username and user_id")
     args = []
     one = False
@@ -12,11 +12,11 @@ def get_users(username=None, user_id=None):
     (SELECT COUNT(*) FROM Comments C WHERE C.user_id = U.id) comment_count,
     image IS NOT NULL has_image
     FROM Users U"""
-    if username:
+    if username is not None:
         args.append(username)
         sql += " WHERE U.username = ?"
         one = True
-    elif user_id:
+    elif user_id is not None:
         args.append(user_id)
         sql += " WHERE U.id = ?"
         one = True
@@ -35,11 +35,11 @@ def get_posts(post_id=None, keyword=None, page=None):
     sql = """SELECT P.id, P.content, CL.id class_id, CL.name class, P.time, P.user_id, U.username, COUNT(C.id) count
     FROM Posts P LEFT JOIN Comments C ON P.id = C.post_id, Users U, Classes CL
     WHERE P.user_id = U.id AND P.class_id = CL.id"""
-    if post_id:
+    if post_id is not None:
         args.append(post_id)
         sql += " AND P.id = ?"
         one = True
-    if keyword:
+    if keyword is not None:
         args.append(f"%{keyword[0]}%")
         if keyword[1] == "content":
             sql += " AND P.content LIKE ?"
@@ -48,7 +48,7 @@ def get_posts(post_id=None, keyword=None, page=None):
         else:
             raise ValueError("illegal search-by parameter")
     sql += " GROUP BY P.id ORDER BY P.time DESC"
-    if page:
+    if page is not None:
         args.append(page["size"])
         args.append((page["page"] - 1) * page["size"])
         sql += " LIMIT ? OFFSET ?"
@@ -58,7 +58,7 @@ def get_posts(post_id=None, keyword=None, page=None):
 def get_post_pages(page_size, keyword=None):
     args = []
     sql = "SELECT COUNT(P.id) FROM Posts P"
-    if keyword:
+    if keyword is not None:
         args.append(f"%{keyword[0]}%")
         sql += ", Users U WHERE P.user_id = U.id AND "
         if keyword[1] == "content":
@@ -76,14 +76,14 @@ def get_comments(post_id=None, comment_id=None, keyword=None, page=None):
     one = False
     sql = """SELECT C.id, C.content, C.time, C.user_id, C.post_id, U.username
     FROM Comments C, Users U WHERE C.user_id = U.id"""
-    if post_id:
+    if post_id is not None:
         args.append(post_id)
         sql += " AND C.post_id = ?"
-    if comment_id:
+    if comment_id is not None:
         args.append(comment_id)
         sql += " AND C.id = ?"
         one = True
-    if keyword:
+    if keyword is not None:
         args.append(f"%{keyword[0]}%")
         if keyword[1] == "content":
             sql += " AND C.content LIKE ?"
@@ -92,7 +92,7 @@ def get_comments(post_id=None, comment_id=None, keyword=None, page=None):
         else:
             raise ValueError("illegal search-by parameter")
     sql += " ORDER BY C.time"
-    if page:
+    if page is not None:
         args.append(page["size"])
         args.append((page["page"] - 1) * page["size"])
         sql += " LIMIT ? OFFSET ?"
@@ -101,7 +101,7 @@ def get_comments(post_id=None, comment_id=None, keyword=None, page=None):
 
 def get_comment_pages(post_id, page_size, keyword=None):
     args = [post_id]
-    if not keyword:
+    if not keyword is not None:
         sql = "SELECT COUNT(C.id) FROM Comments C WHERE C.post_id = ?"
     else:
         args.append(f"%{keyword[0]}%")
@@ -121,7 +121,7 @@ def get_classes(class_id=None):
     args = []
     one = False
     sql = "SELECT id, name FROM Classes"
-    if class_id:
+    if class_id is not None:
         args.append(class_id)
         sql += " WHERE id = ?"
         one = True
