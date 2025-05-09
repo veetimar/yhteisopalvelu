@@ -31,7 +31,7 @@
   <form action="/" method="get">
     <p>
       <label for="keyword">Etsi postauksia</label>:<br />
-      <input type="text" id="keyword" name="keyword" value="{{ keyword[0] if keyword }}" maxlength="1000" required />
+      <input type="text" id="keyword" name="keyword" value="{{ keyword.keyword if keyword }}" maxlength="1000" required />
       <button name="content">Sisällön mukaan</button>
       <button name="username">Käyttäjänimellä</button>
     </p>
@@ -39,7 +39,7 @@
   {% if keyword %}
   <form action="/" method="get">
     <p>
-      Tulokset haulle "{{ keyword[0] }}":
+      Tulokset haulle "{{ keyword.keyword }}":
       <button>Peruuta</button>
     </p>
   </form>
@@ -86,8 +86,8 @@
     <button name="page" value="{{ page.count }}">&gt;&gt;</button>
     {% endif %}
     {% if keyword %}
-    <input type="hidden" name="keyword" value="{{ keyword[0] }}" />
-    <input type="hidden" name="{{ keyword[1] }}" />
+    <input type="hidden" name="keyword" value="{{ keyword.keyword }}" />
+    <input type="hidden" name="{{ keyword.type }}" />
     {% endif %}
   </form>
 </div>

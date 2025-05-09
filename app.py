@@ -77,9 +77,9 @@ def index():
         if not 0 < len(keyword) <= 1000:
             flask.abort(403)
         if "content" in flask.request.args and "username" not in flask.request.args:
-            keyword = (keyword, "content")
+            keyword = {"keyword": keyword, "type": "content"}
         elif "content" not in flask.request.args and "username" in flask.request.args:
-            keyword = (keyword, "username")
+            keyword = {"keyword": keyword, "type": "username"}
         else:
             flask.abort(403)
     else:
@@ -338,9 +338,9 @@ def comments(post_id):
         if not 0 < len(keyword) <= 1000:
             flask.abort(403)
         if "content" in flask.request.args and "username" not in flask.request.args:
-            keyword = (keyword, "content")
+            keyword = {"keyword": keyword, "type": "content"}
         elif "content" not in flask.request.args and "username" in flask.request.args:
-            keyword = (keyword, "username")
+            keyword = {"keyword": keyword, "type": "username"}
         else:
             flask.abort(403)
     else:

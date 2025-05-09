@@ -40,10 +40,10 @@ def get_posts(post_id=None, keyword=None, page=None):
         sql += " AND P.id = ?"
         one = True
     if keyword is not None:
-        args.append(f"%{keyword[0]}%")
-        if keyword[1] == "content":
+        args.append(f"%{keyword["keyword"]}%")
+        if keyword["type"] == "content":
             sql += " AND P.content LIKE ?"
-        elif keyword[1] == "username":
+        elif keyword["type"] == "username":
             sql += " AND U.username LIKE ?"
         else:
             raise ValueError("illegal search-by parameter")
@@ -59,11 +59,11 @@ def get_post_pages(page_size, keyword=None):
     args = []
     sql = "SELECT COUNT(P.id) FROM Posts P"
     if keyword is not None:
-        args.append(f"%{keyword[0]}%")
+        args.append(f"%{keyword["keyword"]}%")
         sql += ", Users U WHERE P.user_id = U.id AND "
-        if keyword[1] == "content":
+        if keyword["type"] == "content":
             sql += "P.content LIKE ?"
-        elif keyword[1] == "username":
+        elif keyword["type"] == "username":
             sql += "U.username LIKE ?"
         else:
             raise ValueError("illegal search-by parameter")
@@ -84,10 +84,10 @@ def get_comments(post_id=None, comment_id=None, keyword=None, page=None):
         sql += " AND C.id = ?"
         one = True
     if keyword is not None:
-        args.append(f"%{keyword[0]}%")
-        if keyword[1] == "content":
+        args.append(f"%{keyword["keyword"]}%")
+        if keyword["type"] == "content":
             sql += " AND C.content LIKE ?"
-        elif keyword[1] == "username":
+        elif keyword["type"] == "username":
             sql += " AND U.username LIKE ?"
         else:
             raise ValueError("illegal search-by parameter")
@@ -104,12 +104,12 @@ def get_comment_pages(post_id, page_size, keyword=None):
     if not keyword is not None:
         sql = "SELECT COUNT(C.id) FROM Comments C WHERE C.post_id = ?"
     else:
-        args.append(f"%{keyword[0]}%")
+        args.append(f"%{keyword["keyword"]}%")
         sql = """SELECT COUNT(C.id) FROM Comments C, Users U
         WHERE C.post_id = ? AND C.user_id = U.id AND """
-        if keyword[1] == "content":
+        if keyword["type"] == "content":
             sql += "C.content LIKE ?"
-        elif keyword[1] == "username":
+        elif keyword["type"] == "username":
             sql += "U.username LIKE ?"
         else:
             raise ValueError("illegal search-by parameter")
