@@ -26,15 +26,15 @@
     <p>
       <label for="keyword">Etsi kommentteja</label>:<br />
       <input type="text" id="keyword" name="keyword" value="{{ keyword[0] if keyword }}" maxlength="1000" required />
-      <input type="submit" name="content" value="Sisällön mukaan" />
-      <input type="submit" name="username" value="Käyttäjänimellä" />
+      <button name="content">Sisällön mukaan</button>
+      <button name="username">Käyttäjänimellä</button>
     </p>
   </form>
   {% if keyword %}
   <form action="/comments/{{ post.id }}" method="get">
     <p>
       Tulokset haulle "{{ keyword[0] }}":
-      <input type="submit" name="cancel" value="Peruuta" />
+      <button>Peruuta</button>
     </p>
   </form>
   {% endif %}
@@ -61,17 +61,17 @@
 <div class="pages">
   <form action="/comments/{{ post.id }}" method="get">
     {% if page.page > 2 %}
-    <button type="submit" name="page" value="1">&lt;&lt;</button>
+    <button name="page" value="1">&lt;&lt;</button>
     {% endif %}
     {% if page.page > 1 %}
-    <button type="submit" name="page" value="{{ page.page - 1 }}">&lt;</button>
+    <button name="page" value="{{ page.page - 1 }}">&lt;</button>
     {% endif %}
     Sivu {{ page.page }}/{{ page.count }}
     {% if page.page < page.count %}
-    <button type="submit" name="page" value="{{ page.page + 1 }}">&gt;</button>
+    <button name="page" value="{{ page.page + 1 }}">&gt;</button>
     {% endif %}
     {% if page.page < page.count - 1 %}
-    <button type="submit" name="page" value="{{ page.count }}">&gt;&gt;</button>
+    <button name="page" value="{{ page.count }}">&gt;&gt;</button>
     {% endif %}
     {% if keyword %}
     <input type="hidden" name="keyword" value="{{ keyword[0] }}" />

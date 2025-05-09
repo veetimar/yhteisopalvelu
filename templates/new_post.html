@@ -12,7 +12,7 @@
       <input type="radio" name="class" value="{{ class.id }}" {{ "checked" if filled.class == class.id else "" }} required /> {{ class.name }}
       {% endfor %}
     </p>
-    <input type="submit" value="Julkaise" />
+    <button>Julkaise</button>
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
   </form>
 </div>

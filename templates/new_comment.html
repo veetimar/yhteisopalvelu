@@ -7,7 +7,7 @@
       <label for="content">Mitä mietteitä</label>:<br />
       <textarea id="content" name="content" rows="7" cols="70" maxlength="1000" required>{{ filled.content }}</textarea>
     </p>
-    <input type="submit" value="Julkaise" />
+    <button>Julkaise</button>
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
   </form>
 </div>

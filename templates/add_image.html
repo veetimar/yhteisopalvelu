@@ -7,7 +7,7 @@
         <label for="new_image">Kuva (jätä tyhjäksi poistaaksesi vanhan kuvan)</label>:<br />
         <input type="file" id="new_image" name="new_image" accept=".jpg" />
     </p>
-    <input type="submit" value="Lähetä" />
+    <button>Lähetä</button>
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
   </form>
 </div>

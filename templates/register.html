@@ -9,7 +9,7 @@
 <div class="form">
   <form action="/login" method="get">
     Tai
-    <input id="get" type="submit" value="Kirjaudu sisään" />
+    <button id="get">Kirjaudu sisään</button>
     {% if next_page %}
     <input type="hidden" name="next_page" value="{{ next_page }}" />
     {% else %}
@@ -29,7 +29,7 @@
       <label for="password2">Salasana uudelleen</label>:<br />
       <input type="password" id="password2" name="password2" maxlength="20" required />
     </p>
-    <input type="submit" value="Rekisteröidy" />
+    <button>Rekisteröidy</button>
     {% if next_page %}
     <input type="hidden" name="next_page" value="{{ next_page }}" />
     {% else %}
