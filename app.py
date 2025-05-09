@@ -158,11 +158,15 @@ def logout():
     return flask.redirect("/")
 
 @app.route("/user/<int:user_id>")
-def user(user_id):
-    try:
-        usr = data.get_users(user_id=user_id)
-    except OverflowError:
-        flask.abort(404)
+@app.route("/user/<username>")
+def user(user_id=None, username=None):
+    if user_id is not None:
+        try:
+            usr = data.get_users(user_id=user_id)
+        except OverflowError:
+            flask.abort(404)
+    else:
+        usr = data.get_users(username=username)
     if not usr:
         flask.abort(404)
     return flask.render_template("user.html", user=usr)
