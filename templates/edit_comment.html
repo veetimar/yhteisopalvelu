@@ -2,12 +2,13 @@
 {% block title %}Muokkaa kommenttia{% endblock %}
 {% block content %}
 <div class="form">
-  <form action="/edit_comment/{{ comment.id }}" method="post">
+  <form action="/edit_comment/{{ comment_id }}" method="post">
     <p>
       <label for="content">Tee tarvittavat muutokset</label>:<br />
-      <textarea id="content" name="content" rows="7" cols="70" maxlength="1000" required>{{ filled.content if filled else comment.content }}</textarea>
+      <textarea id="content" name="content" rows="7" cols="70" maxlength="1000" required>{{ filled.content }}</textarea>
     </p>
     <button>Muokkaa</button>
+    <input type="hidden" name="next_page" value="{{ next_page }}" />
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
   </form>
 </div>

@@ -95,7 +95,8 @@ def index():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if flask.request.method == "GET":
-        next_page = flask.request.args.get("next_page", flask.request.referrer)
+        referrer = flask.request.referrer if flask.request.referrer else "/"
+        next_page = flask.request.args.get("next_page", referrer)
         return flask.render_template("register.html", filled={}, next_page=next_page)
     if flask.request.method == "POST":
         next_page = get_keys(["next_page"])
@@ -125,7 +126,8 @@ def register():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if flask.request.method == "GET":
-        next_page = flask.request.args.get("next_page", flask.request.referrer)
+        referrer = flask.request.referrer if flask.request.referrer else "/"
+        next_page = flask.request.args.get("next_page", referrer)
         return flask.render_template("login.html", filled={}, next_page=next_page)
     if flask.request.method == "POST":
         next_page = get_keys(["next_page"])
@@ -290,22 +292,24 @@ def edit_post(post_id):
     check_permission(post["user_id"])
     classes = data.get_classes()
     if flask.request.method == "GET":
+        next_page = flask.request.referrer if flask.request.referrer else "/"
         filled = {"content": post["content"], "class": post["class_id"]}
-        return flask.render_template("edit_post.html", post_id=post_id, classes=classes, filled=filled)
+        return flask.render_template("edit_post.html", post_id=post_id, classes=classes, filled=filled, next_page=next_page)
     if flask.request.method == "POST":
         check_csrf()
+        next_page = get_keys(["next_page"])
         content, cs = get_keys(["content", "class"])
         if not 0 < len(content) <= 1000:
             flask.abort(403)
         if not check_string(content):
             filled = {"content": content, "class": cs}
             flask.flash("VIRHE: Postauksessa ei-sallittuja merkkejä")
-            return flask.render_template("edit_post.html", post_id=post_id, classes=classes, filled=filled)
+            return flask.render_template("edit_post.html", post_id=post_id, classes=classes, filled=filled, next_page=next_page)
         try:
             data.edit_post(content, cs, post_id)
         except sqlite3.IntegrityError:
             flask.abort(403)
-        return flask.redirect("/")
+        return flask.redirect(next_page)
 
 @app.route("/delete_post/<int:post_id>", methods=["GET", "POST"])
 @require_login
@@ -318,12 +322,15 @@ def delete_post(post_id):
         flask.abort(404)
     check_permission(post["user_id"])
     if flask.request.method == "GET":
-        return flask.render_template("delete_post.html", post_id=post_id)
+        next_page = flask.request.referrer if flask.request.referrer else "/"
+        return flask.render_template("delete_post.html", post_id=post_id, next_page=next_page)
     if flask.request.method == "POST":
         check_csrf()
+        next_page = get_keys(["next_page"])
         if "yes" in flask.request.form:
             data.delete_post(post_id)
-        return flask.redirect("/")
+            return flask.redirect("/")
+        return flask.redirect(next_page)
 
 @app.route("/comments")
 @app.route("/comments/<int:post_id>")
@@ -392,18 +399,21 @@ def edit_domment(comment_id):
         flask.abort(404)
     check_permission(comment["user_id"])
     if flask.request.method == "GET":
-        return flask.render_template("edit_comment.html", comment=comment, filled={})
+        next_page = flask.request.referrer if flask.request.referrer else f"/comments/{comment["post_id"]}"
+        filled = {"content": comment["content"]}
+        return flask.render_template("edit_comment.html", comment_id=comment_id, filled=filled, next_page=next_page)
     if flask.request.method == "POST":
         check_csrf()
+        next_page = get_keys(["next_page"])
         content = get_keys(["content"])
         if not 0 < len(content) <= 1000:
             flask.abort(403)
         if not check_string(content):
             filled = {"content": content}
             flask.flash("VIRHE: Kommentissa ei-sallittuja merkkejä")
-            return flask.render_template("edit_comment.html", comment=comment, filled=filled)
+            return flask.render_template("edit_comment.html", comment_id=comment_id, filled=filled, next_page=next_page)
         data.edit_comment(content, comment_id)
-        return flask.redirect(f"/comments/{comment["post_id"]}")
+        return flask.redirect(next_page)
 
 @app.route("/delete_comment/<int:comment_id>", methods=["GET", "POST"])
 @require_login
@@ -416,12 +426,14 @@ def delete_comment(comment_id):
         flask.abort(404)
     check_permission(comment["user_id"])
     if flask.request.method == "GET":
-        return flask.render_template("delete_comment.html", comment_id=comment_id)
+        next_page = flask.request.referrer if flask.request.referrer else f"/comments/{comment["post_id"]}"
+        return flask.render_template("delete_comment.html", comment_id=comment_id, next_page=next_page)
     if flask.request.method == "POST":
         check_csrf()
+        next_page = get_keys(["next_page"])
         if "yes" in flask.request.form:
             data.delete_comment(comment_id)
-    return flask.redirect(f"/comments/{comment["post_id"]}")
+    return flask.redirect(next_page)
 
 
 if __name__ == "__main__":

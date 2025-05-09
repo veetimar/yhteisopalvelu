@@ -10,11 +10,7 @@
   <form action="/register" method="get">
     Tai
     <button id="get">Rekisteröidy</button>
-    {% if next_page %}
     <input type="hidden" name="next_page" value="{{ next_page }}" />
-    {% else %}
-    <input type="hidden" name="next_page" value="/" />
-    {% endif %}
   </form>
   <form action="/login" method="post">
     <p>
@@ -26,11 +22,7 @@
       <input type="password" id="password" name="password" maxlength="20" required />
     </p>
     <button>Kirjaudu sisään</button>
-    {% if next_page %}
     <input type="hidden" name="next_page" value="{{ next_page }}" />
-    {% else %}
-    <input type="hidden" name="next_page" value="/" />
-    {% endif %}
   </form>
 </div>
 {% endblock %}

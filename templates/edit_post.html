@@ -13,6 +13,7 @@
       {% endfor %}
     </p>
     <button>Muokkaa</button>
+    <input type="hidden" name="next_page" value="{{ next_page }}" />
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
   </form>
 </div>
