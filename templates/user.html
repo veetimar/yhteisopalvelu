@@ -26,28 +26,18 @@
     <em>Ei profiilikuvaa</em>
     {% endif %}
   </p>
-  <p>
-    {{ user.post_count }} postausta
-  </p>
-  <p>
-    {{ user.comment_count }} kommenttia
-  </p>
-  {% if user.post_count %}
   <form action="/" method="get">
     <p>
       <input type="hidden" name="keyword" value="{{ user.username }}" />
-      <button id="get" name="username">Näytä käyttäjän postaukset</button>
+      <button id="get" name="username">{{ user.post_count }} postausta</button>
     </p>
   </form>
-  {% endif %}
-  {% if user.comment_count %}
   <form action="/comments" method="get">
     <p>
       <input type="hidden" name="keyword" value="{{ user.username }}" />
-      <button id="get" name="username">Näytä käyttäjän kommentit</button>
+      <button id="get" name="username">{{ user.comment_count }} kommenttia</button>
     </p>
   </form>
-  {% endif %}
   {% if session.username == user.username or session.admin %}
   <div class="admin">
     <h3>Ylläpitopaneeli</h3>
