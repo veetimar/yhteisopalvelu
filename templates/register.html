@@ -7,10 +7,9 @@
 {% endblock %}
 {% block content %}
 <div class="form">
-  <form action="/login" method="post">
+  <form action="/login" method="get">
     Tai
     <input id="get" type="submit" value="Kirjaudu sisään" />
-    <input type="hidden" name="get" />
     {% if next_page %}
     <input type="hidden" name="next_page" value="{{ next_page }}" />
     {% else %}

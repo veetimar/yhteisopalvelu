@@ -28,16 +28,16 @@
     <a href=/login>Kirjaudu sisään</a> postataksesi
   </p>
   {% endif %}
-  <form action="/" method="post">
+  <form action="/" method="get">
     <p>
       <label for="keyword">Etsi postauksia</label>:<br />
       <input type="text" id="keyword" name="keyword" value="{{ keyword[0] if keyword }}" maxlength="1000" required />
-      <input type="submit" name="content" value="sisällön perusteella" />
-      <input type="submit" name="username" value="käyttäjänimellä" />
+      <input type="submit" name="content" value="Sisällön mukaan" />
+      <input type="submit" name="username" value="Käyttäjänimellä" />
     </p>
   </form>
   {% if keyword %}
-  <form action="/" method="post">
+  <form action="/" method="get">
     <p>
       Tulokset haulle "{{ keyword[0] }}":
       <input type="submit" name="cancel" value="Peruuta" />
@@ -71,19 +71,19 @@
 </div>
 {% if page %}
 <div class="pages">
-  <form method="post">
+  <form action="/" method="get">
     {% if page.page > 2 %}
-    <input type="submit" formaction="/1" value="&lt;&lt;" />
+    <button type="submit" name="page" value="1">&lt;&lt;</button>
     {% endif %}
     {% if page.page > 1 %}
-    <input type="submit" formaction="/{{ page.page - 1 }}" value="&lt;" />
+    <button type="submit" name="page" value="{{ page.page - 1 }}">&lt;</button>
     {% endif %}
     Sivu {{ page.page }}/{{ page.count }}
     {% if page.page < page.count %}
-    <input type="submit" formaction="/{{ page.page + 1 }}" value="&gt;" />
+    <button type="submit" name="page" value="{{ page.page + 1 }}">&gt;</button>
     {% endif %}
     {% if page.page < page.count - 1 %}
-    <input type="submit" formaction="/{{ page.count }}" value="&gt;&gt;" />
+    <button type="submit" name="page" value="{{ page.count }}">&gt;&gt;</button>
     {% endif %}
     {% if keyword %}
     <input type="hidden" name="keyword" value="{{ keyword[0] }}" />

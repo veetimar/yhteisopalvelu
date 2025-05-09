@@ -70,41 +70,35 @@ def create_session(user_id, username, admin=False):
     flask.session["admin"] = admin
     flask.session["csrf_token"] = secrets.token_hex()
 
-@app.route("/", methods=["GET", "POST"])
-@app.route("/<int:page>", methods=["GET", "POST"])
-def index(page=1):
-    if "keyword" in flask.request.form:
-        keyword = flask.request.form["keyword"]
+@app.route("/")
+def index():
+    if "keyword" in flask.request.args:
+        keyword = flask.request.args.get("keyword")
         if not 0 < len(keyword) <= 1000:
             flask.abort(403)
-        if "content" in flask.request.form and "username" not in flask.request.form:
+        if "content" in flask.request.args and "username" not in flask.request.args:
             keyword = (keyword, "content")
-        elif "content" not in flask.request.form and "username" in flask.request.form:
+        elif "content" not in flask.request.args and "username" in flask.request.args:
             keyword = (keyword, "username")
         else:
             flask.abort(403)
     else:
         keyword = None
     page_count = data.get_post_pages(PAGE_SIZE, keyword=keyword)
+    page = int(flask.request.args.get("page", 1))
     if page < 1 or page > page_count:
         flask.abort(404)
     page = {"page": page, "size": PAGE_SIZE, "count": page_count} if page_count > 1 else None
     posts = data.get_posts(keyword=keyword, page=page)
-    if flask.request.method == "GET":
-        return flask.render_template("index.html", posts=posts, page=page, keyword=keyword)
-    if flask.request.method == "POST":
-        if "cancel" in flask.request.form:
-            return flask.render_template("index.html", posts=posts, page=page, keyword=keyword)
-        return flask.render_template("index.html", posts=posts, page=page, keyword=keyword)
+    return flask.render_template("index.html", posts=posts, page=page, keyword=keyword)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if flask.request.method == "GET":
-        return flask.render_template("register.html", filled={}, next_page=flask.request.referrer)
+        next_page = flask.request.args.get("next_page", flask.request.referrer)
+        return flask.render_template("register.html", filled={}, next_page=next_page)
     if flask.request.method == "POST":
         next_page = get_keys(["next_page"])
-        if "get" in flask.request.form:
-            return flask.render_template("register.html", filled={}, next_page=next_page)
         username, password1, password2 = get_keys(["username", "password1", "password2"])
         if not (username and password1 and password2) or max(len(username), len(password1), len(password2)) > 20:
             flask.abort(403)
@@ -131,11 +125,10 @@ def register():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if flask.request.method == "GET":
-        return flask.render_template("login.html", filled={}, next_page=flask.request.referrer)
+        next_page = flask.request.args.get("next_page", flask.request.referrer)
+        return flask.render_template("login.html", filled={}, next_page=next_page)
     if flask.request.method == "POST":
         next_page = get_keys(["next_page"])
-        if "get" in flask.request.form:
-            return flask.render_template("login.html", filled={}, next_page=next_page)
         username, password = get_keys(["username", "password"])
         if not username or not password or len(username) > 20 or len(password) > 20:
             flask.abort(403)
@@ -332,38 +325,33 @@ def delete_post(post_id):
             data.delete_post(post_id)
         return flask.redirect("/")
 
-@app.route("/comments/<int:post_id>", methods=["GET", "POST"])
-@app.route("/comments/<int:post_id>/<int:page>", methods=["GET", "POST"])
-def comments(post_id, page=1):
+@app.route("/comments/<int:post_id>")
+def comments(post_id):
     try:
         post = data.get_posts(post_id=post_id)
     except OverflowError:
         flask.abort(404)
     if not post:
         flask.abort(404)
-    if "keyword" in flask.request.form:
-        keyword = flask.request.form["keyword"]
+    if "keyword" in flask.request.args:
+        keyword = flask.request.args.get("keyword")
         if not 0 < len(keyword) <= 1000:
             flask.abort(403)
-        if "content" in flask.request.form and "username" not in flask.request.form:
+        if "content" in flask.request.args and "username" not in flask.request.args:
             keyword = (keyword, "content")
-        elif "content" not in flask.request.form and "username" in flask.request.form:
+        elif "content" not in flask.request.args and "username" in flask.request.args:
             keyword = (keyword, "username")
         else:
             flask.abort(403)
     else:
         keyword = None
     page_count = data.get_comment_pages(post_id, PAGE_SIZE, keyword=keyword)
+    page = int(flask.request.args.get("page", 1))
     if page < 1 or page > page_count:
         flask.abort(404)
     page = {"page": page, "size": PAGE_SIZE, "count": page_count} if page_count > 1 else None
     cmmnts = data.get_comments(post_id=post_id, keyword=keyword, page=page)
-    if flask.request.method == "GET":
-        return flask.render_template("comments.html", post=post, comments=cmmnts, page=page, keyword=keyword)
-    if flask.request.method == "POST":
-        if "cancel" in flask.request.form:
-            return flask.render_template("comments.html", post=post, comments=cmmnts, page=page, keyword=keyword)
-        return flask.render_template("comments.html", post=post, comments=cmmnts, page=page, keyword=keyword)
+    return flask.render_template("comments.html", post=post, comments=cmmnts, page=page, keyword=keyword)
 
 @app.route("/new_comment/<int:post_id>", methods=["GET", "POST"])
 @require_login
