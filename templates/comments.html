@@ -12,6 +12,12 @@
   <p>
     <strong>{{ post.class }}</strong>
   </p>
+  {% if post.username == session.username or session.admin %}
+  <p>
+    <a href="/edit_post/{{ post.id }}">Muokkaa</a> |
+    <a href="/delete_post/{{ post.id }}">Poista</a>
+  </p>
+  {% endif %}
 </div>
 {% endif %}
 <div class="search">
