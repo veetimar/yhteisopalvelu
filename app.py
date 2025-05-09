@@ -325,14 +325,18 @@ def delete_post(post_id):
             data.delete_post(post_id)
         return flask.redirect("/")
 
+@app.route("/comments")
 @app.route("/comments/<int:post_id>")
-def comments(post_id):
-    try:
-        post = data.get_posts(post_id=post_id)
-    except OverflowError:
-        flask.abort(404)
-    if not post:
-        flask.abort(404)
+def comments(post_id=None):
+    if post_id is not None:
+        try:
+            post = data.get_posts(post_id=post_id)
+        except OverflowError:
+            flask.abort(404)
+        if not post:
+            flask.abort(404)
+    else:
+        post = None
     if "keyword" in flask.request.args:
         keyword = flask.request.args.get("keyword")
         if not 0 < len(keyword) <= 1000:
@@ -345,7 +349,7 @@ def comments(post_id):
             flask.abort(403)
     else:
         keyword = None
-    page_count = data.get_comment_pages(post_id, PAGE_SIZE, keyword=keyword)
+    page_count = data.get_comment_pages(PAGE_SIZE, keyword=keyword, post_id=post_id)
     page = int(flask.request.args.get("page", 1))
     if page < 1 or page > page_count:
         flask.abort(404)

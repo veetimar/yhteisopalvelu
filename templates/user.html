@@ -40,6 +40,14 @@
     </p>
   </form>
   {% endif %}
+  {% if user.comment_count %}
+  <form action="/comments" method="get">
+    <p>
+      <input type="hidden" name="keyword" value="{{ user.username }}" />
+      <button id="get" name="username">Näytä käyttäjän kommentit</button>
+    </p>
+  </form>
+  {% endif %}
   {% if session.username == user.username or session.admin %}
   <div class="admin">
     <h3>Ylläpitopaneeli</h3>

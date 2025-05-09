@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 {% block title %}Kommentit{% endblock %}
 {% block content %}
+{% if post %}
 <div class = "post">
   <p>
     {{ post.time }}, <a href="/user/{{ post.user_id }}">{{ post.username }}</a>:
@@ -12,7 +13,9 @@
     <strong>{{ post.class }}</strong>
   </p>
 </div>
+{% endif %}
 <div class="search">
+  {% if post %}
   {% if session.username %}
   <p>
     <a href="/new_comment/{{ post.id }}">Uusi kommentti</a>
@@ -22,7 +25,8 @@
     <a href=/login>Kirjaudu sisään</a> kommentoidaksesi
   </p>
   {% endif %}
-  <form action="/comments/{{ post.id }}" method="get">
+  {% endif %}
+  <form action="/comments{{ "/" + post.id | string if post }}" method="get">
     <p>
       <label for="keyword">Etsi kommentteja</label>:<br />
       <input type="text" id="keyword" name="keyword" value="{{ keyword.keyword if keyword }}" maxlength="1000" required />
@@ -31,7 +35,7 @@
     </p>
   </form>
   {% if keyword %}
-  <form action="/comments/{{ post.id }}" method="get">
+  <form action="/comments{{ "/" + post.id | string if post }}" method="get">
     <p>
       Tulokset haulle "{{ keyword.keyword }}":
       <button>Peruuta</button>
@@ -59,7 +63,7 @@
 </div>
 {% if page %}
 <div class="pages">
-  <form action="/comments/{{ post.id }}" method="get">
+  <form action="/comments{{ "/" + post.id | string if post }}" method="get">
     {% if page.page > 2 %}
     <button name="page" value="1">&lt;&lt;</button>
     {% endif %}

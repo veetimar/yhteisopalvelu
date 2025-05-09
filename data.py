@@ -99,18 +99,24 @@ def get_comments(post_id=None, comment_id=None, keyword=None, page=None):
     with database.dbase as db:
         return db.query(sql, args=args, one=one)
 
-def get_comment_pages(post_id, page_size, keyword=None):
-    args = [post_id]
-    if not keyword is not None:
-        sql = "SELECT COUNT(C.id) FROM Comments C WHERE C.post_id = ?"
-    else:
+def get_comment_pages(page_size, keyword=None, post_id=None):
+    args = []
+    sql = "SELECT COUNT(C.id) FROM COMMENTS C"
+    if keyword is not None and keyword["type"] == "username":
+        sql += ", Users U"
+    if post_id is not None:
+        args.append(post_id)
+        sql += " WHERE C.post_id = ?"
+    if keyword is not None:
         args.append(f"%{keyword["keyword"]}%")
-        sql = """SELECT COUNT(C.id) FROM Comments C, Users U
-        WHERE C.post_id = ? AND C.user_id = U.id AND """
+        if post_id is not None:
+            sql += " AND"
+        else:
+            sql += " WHERE"
         if keyword["type"] == "content":
-            sql += "C.content LIKE ?"
+            sql += " C.content LIKE ?"
         elif keyword["type"] == "username":
-            sql += "U.username LIKE ?"
+            sql += " C.user_id = U.id AND U.username LIKE ?"
         else:
             raise ValueError("illegal search-by parameter")
     with database.dbase as db:
