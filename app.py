@@ -255,12 +255,14 @@ def delete_user(user_id):
         return flask.render_template("delete_user.html", user_id=user_id)
     if flask.request.method == "POST":
         check_csrf()
-        if "yes" in flask.request.form:
+        if "yes" in flask.request.form and "no" not in flask.request.form:
             data.delete_user(user_id)
             if user_id != flask.session["id"]:
                 return flask.redirect("/")
             return flask.redirect("/logout")
-        return flask.redirect(f"/user/{user_id}")
+        if "yes" not in flask.request.form and "no" in flask.request.form:
+            return flask.redirect(f"/user/{user_id}")
+        flask.abort(403)
 
 @app.route("/new_post", methods=["GET", "POST"])
 @require_login
@@ -331,10 +333,12 @@ def delete_post(post_id):
     if flask.request.method == "POST":
         check_csrf()
         next_page = get_keys(["next_page"])
-        if "yes" in flask.request.form:
+        if "yes" in flask.request.form and "no" not in flask.request.form:
             data.delete_post(post_id)
             return flask.redirect("/")
-        return flask.redirect(next_page)
+        if "yes" not in flask.request.form and "no" in flask.request.form:
+            return flask.redirect(next_page)
+        flask.abort(403)
 
 @app.route("/comments")
 @app.route("/comments/<int:post_id>")
@@ -435,9 +439,12 @@ def delete_comment(comment_id):
     if flask.request.method == "POST":
         check_csrf()
         next_page = get_keys(["next_page"])
-        if "yes" in flask.request.form:
+        if "yes" in flask.request.form and "no" not in flask.request.form:
             data.delete_comment(comment_id)
-    return flask.redirect(next_page)
+            return flask.redirect(next_page)
+        if "yes" not in flask.request.form and "no" in flask.request.form:
+            return flask.redirect(next_page)
+        flask.abort(403)
 
 
 if __name__ == "__main__":
