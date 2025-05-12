@@ -12,6 +12,12 @@ from werkzeug.middleware import proxy_fix
 import config
 import data
 
+if config.API_KEY:
+    import openai
+    CLIENT = openai.OpenAI(api_key=config.API_KEY)
+else:
+    CLIENT = None
+
 app = flask.Flask(__name__)
 app.secret_key = config.SECRET_KEY
 app.wsgi_app = proxy_fix.ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
@@ -69,6 +75,10 @@ def create_session(user_id, username, admin=False):
     flask.session["username"] = username
     flask.session["admin"] = admin
     flask.session["csrf_token"] = secrets.token_hex()
+
+def get_llm_response(prompt, instructions=None, model="gpt-4.1"):
+    response = CLIENT.responses.create(model=model, instructions=instructions, input=prompt)
+    return response.output_text
 
 @app.route("/")
 def index():
@@ -272,6 +282,18 @@ def new_post():
         return flask.render_template("new_post.html", classes=classes, filled={})
     if flask.request.method == "POST":
         check_csrf()
+        if "dumb" in flask.request.form:
+            if not CLIENT:
+                flask.flash("VIRHE: Toiminto ei ole käytössä palvelimella")
+                return flask.render_template("new_post.html", classes=classes, filled={})
+            prompt = """Keksi lyhyt postaus, jonka voisi julkaista jossakin sosiaalisessa mediassa.
+            Käytä ainoastaan suomalaisia aakkosia, älä käytä emojeja tai muutakaan turhaa.
+            Sisällytä vastaukseen ainoastaan postauksen sisältö."""
+            response = ""
+            while not (0 < len(response) <= 1000 and check_string(response)):
+                response = get_llm_response(prompt, model="gpt-4.1-nano")
+            filled = {"content": response}
+            return flask.render_template("new_post.html", classes=classes, filled=filled)
         content, cs = get_keys(["content", "class"])
         if not 0 < len(content) <= 1000:
             flask.abort(403)

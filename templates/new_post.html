@@ -2,6 +2,12 @@
 {% block title %}Uusi postaus{% endblock %}
 {% block content %}
 <div class="form">
+  <form action="" method="post">
+    <p>
+      <button name="dumb">Keksi postaus puolestani</button>
+    </p>
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+  </form>
   <form action="/new_post" method="post">
     <p>
       <label for="content">Mitä mietteitä</label>:<br />

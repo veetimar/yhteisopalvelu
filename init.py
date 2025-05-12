@@ -6,6 +6,7 @@ import database
 def __create_config():
     with open("config.py", "w") as file:
         file.write(f"SECRET_KEY = \"{secrets.token_hex()}\"\n")
+        file.write(f"API_KEY = \"{input("OpenAI api-key: ").strip()}\"\n")
 
 def __create_database():
     if os.path.exists("database.db"):

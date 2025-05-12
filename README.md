@@ -9,6 +9,7 @@
 - Käyttäjäsivuilta näkee tilastoja käyttäjästä ja voi poistaa käyttäjän
 - "admin"-nimisestä käyttäjästä tehdään automaattisesti pääkäyttäjä
 - Pääkäyttäjä voi muokata ja poistaa mitä tahansa
+- Mikäli käyttäjä ei jaksa ajatella, voi integroitu OpenAI:n kielimalli keksiä postauksen sisällön hänen puolestaan
 
 ## Sovelluksen käyttö
 Asenna `flask`-kirjasto
@@ -17,11 +18,19 @@ Asenna `flask`-kirjasto
 $ pip install flask
 ```
 
+Mikäli haluat käyttää automaattista postauksien generointia, asenna myös `openai`-kirjasto
+
+```console
+$ pip install openai
+```
+
 Luo tietokannan taulut ja config-tiedosto
 
 ```console
 $ python init.py
 ```
+
+Anna OpenAI:n api-key kysyttäessä, mikäli haluat käyttää postauksien generointia. Muussa tapauksessa jätä kenttä tyhjäksi
 
 Käynnistä sovellus
 
