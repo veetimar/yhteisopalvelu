@@ -290,8 +290,12 @@ def new_post():
             Käytä ainoastaan suomalaisia aakkosia ja välimerkkejä, älä käytä emojeja, viivoja tai muutakaan ylimääräistä.
             Sisällytä vastaukseen ainoastaan postauksen sisältö."""
             response = ""
+            first_try = True
             while not (0 < len(response) <= 1000 and check_string(response)):
+                if not first_try:
+                    print("Illegal generated post, trying again")
                 response = get_llm_response(prompt)
+                first_try = False
             filled = {"content": response}
             return flask.render_template("new_post.html", classes=classes, filled=filled)
         content, cs = get_keys(["content", "class"])
