@@ -76,7 +76,7 @@ def create_session(user_id, username, admin=False):
     flask.session["admin"] = admin
     flask.session["csrf_token"] = secrets.token_hex()
 
-def get_llm_response(prompt, instructions=None, model="gpt-4.1"):
+def get_llm_response(prompt, instructions=None, model="gpt-5-nano"):
     response = CLIENT.responses.create(model=model, instructions=instructions, input=prompt)
     return response.output_text
 
@@ -287,11 +287,11 @@ def new_post():
                 flask.flash("VIRHE: Toiminto ei ole käytössä palvelimella")
                 return flask.render_template("new_post.html", classes=classes, filled={})
             prompt = """Keksi lyhyt postaus, jonka voisi julkaista jossakin sosiaalisessa mediassa.
-            Käytä ainoastaan suomalaisia aakkosia, älä käytä emojeja tai muutakaan turhaa.
+            Käytä ainoastaan suomalaisia aakkosia ja välimerkkejä, älä käytä emojeja, viivoja tai muutakaan ylimääräistä.
             Sisällytä vastaukseen ainoastaan postauksen sisältö."""
             response = ""
             while not (0 < len(response) <= 1000 and check_string(response)):
-                response = get_llm_response(prompt, model="gpt-4.1-nano")
+                response = get_llm_response(prompt)
             filled = {"content": response}
             return flask.render_template("new_post.html", classes=classes, filled=filled)
         content, cs = get_keys(["content", "class"])
