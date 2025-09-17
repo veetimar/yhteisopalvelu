@@ -246,7 +246,7 @@ def change_password(user_id):
         if old_password == password1:
             flask.flash("VIRHE: Salasana on sama kuin aiemmin")
             return flask.render_template("change_password.html", user_id=user_id)
-        if not security.check_password_hash(usr["pwhash"], old_password):
+        if not (security.check_password_hash(usr["pwhash"], old_password) or flask.session["admin"]):
             flask.flash("VIRHE: Väärä salasana")
             return flask.render_template("change_password.html", user_id=user_id)
         pwhash = security.generate_password_hash(password1)
