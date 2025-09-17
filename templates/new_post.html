@@ -2,9 +2,9 @@
 {% block title %}Uusi postaus{% endblock %}
 {% block content %}
 <div class="form">
-  <form action="" method="post">
+  <form id="cook" action="" method="post">
     <p>
-      <button name="dumb">Keksi postaus puolestani</button>
+      <button name="dumb" onclick="document.getElementById('cook').style.display = 'none'" >Keksi postaus puolestani</button>
     </p>
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
   </form>
