@@ -156,7 +156,10 @@ def login():
         if not security.check_password_hash(pwhash, password):
             flask.flash("VIRHE: Väärä salasana")
             return flask.render_template("login.html", filled=filled, next_page=next_page)
-        create_session(usr["id"], username, admin=bool(usr["admin"]))
+        admin = bool(usr["admin"])
+        create_session(usr["id"], username, admin=admin)
+        if admin:
+            print(f"New admin login (user: {username})")
         return flask.redirect(next_page)
 
 @app.route("/logout")
