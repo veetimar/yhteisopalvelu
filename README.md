@@ -1,5 +1,7 @@
 # Yhteisöpalvelu
 
+Tämä työ alkoi kurssiprojektina, mutta olen sittemmin laajentanut sen toiminnallisuutta huomattavasti kurssin vaatimusten yli
+
 ## Keskeiset toiminnot
 - Käyttäjä voi rekisteröityä ja kirjautua palveluun
 - Käyttäjä voi lisätä, muokata ja poistaa postauksia
