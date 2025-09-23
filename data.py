@@ -155,6 +155,11 @@ def make_admin(user_id):
     with database.dbase as db:
         return db.execute(sql, args=[user_id])
 
+def remove_admin(user_id):
+    sql = "UPDATE Users SET admin = 0 WHERE id = ?"
+    with database.dbase as db:
+        return db.execute(sql, args=[user_id])
+
 def delete_user(user_id):
     sql = "DELETE FROM Users WHERE id = ?"
     with database.dbase as db:
