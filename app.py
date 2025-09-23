@@ -264,17 +264,18 @@ def delete_user(user_id):
     if not usr:
         flask.abort(404)
     check_permission(user_id)
+    default = "/logout" if user_id == flask.session["id"] else "/"
     if flask.request.method == "GET":
-        return flask.render_template("delete_user.html", user_id=user_id)
+        next_page = flask.request.referrer if flask.request.referrer else default
+        return flask.render_template("confirm.html", page=f"/delete_user/{user_id}", msg="poistaa käyttäjän", next_page=next_page)
     if flask.request.method == "POST":
         check_csrf()
+        next_page = get_keys(["next_page"])
         if "yes" in flask.request.form and "no" not in flask.request.form:
             data.delete_user(user_id)
-            if user_id != flask.session["id"]:
-                return flask.redirect("/")
-            return flask.redirect("/logout")
+            return flask.redirect(default)
         if "yes" not in flask.request.form and "no" in flask.request.form:
-            return flask.redirect(f"/user/{user_id}")
+            return flask.redirect(next_page)
         flask.abort(403)
 
 @app.route("/new_post", methods=["GET", "POST"])
@@ -356,15 +357,16 @@ def delete_post(post_id):
     if not post:
         flask.abort(404)
     check_permission(post["user_id"])
+    default = "/"
     if flask.request.method == "GET":
-        next_page = flask.request.referrer if flask.request.referrer else "/"
-        return flask.render_template("delete_post.html", post_id=post_id, next_page=next_page)
+        next_page = flask.request.referrer if flask.request.referrer else default
+        return flask.render_template("confirm.html", page=f"/delete_post/{post_id}", msg="poistaa postauksen", next_page=next_page)
     if flask.request.method == "POST":
         check_csrf()
         next_page = get_keys(["next_page"])
         if "yes" in flask.request.form and "no" not in flask.request.form:
             data.delete_post(post_id)
-            return flask.redirect("/")
+            return flask.redirect(default)
         if "yes" not in flask.request.form and "no" in flask.request.form:
             return flask.redirect(next_page)
         flask.abort(403)
@@ -462,15 +464,16 @@ def delete_comment(comment_id):
     if not comment:
         flask.abort(404)
     check_permission(comment["user_id"])
+    default = f"/comments/{comment["post_id"]}"
     if flask.request.method == "GET":
-        next_page = flask.request.referrer if flask.request.referrer else f"/comments/{comment["post_id"]}"
-        return flask.render_template("delete_comment.html", comment_id=comment_id, next_page=next_page)
+        next_page = flask.request.referrer if flask.request.referrer else default
+        return flask.render_template("confirm.html", page=f"/delete_comment/{comment_id}", msg="poistaa kommentin", next_page=next_page)
     if flask.request.method == "POST":
         check_csrf()
         next_page = get_keys(["next_page"])
         if "yes" in flask.request.form and "no" not in flask.request.form:
             data.delete_comment(comment_id)
-            return flask.redirect(next_page)
+            return flask.redirect(default)
         if "yes" not in flask.request.form and "no" in flask.request.form:
             return flask.redirect(next_page)
         flask.abort(403)

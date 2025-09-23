@@ -2,9 +2,9 @@
 {% block title %}Vahvista{% endblock %}
 {% block content %}
 <div class="form">
-  <form action="/delete_comment/{{ comment_id }}" method="post">
+  <form action="{{ page }}" method="post">
     <p>
-      Haluatko varmasti poistaa kommentin?
+      Haluatko varmasti {{ msg }}?
     </p>
     <button name="no">Ei</button>
     <button name="yes">Kyllä</button>
