@@ -15,6 +15,7 @@ import data
 if config.API_KEY:
     import openai
     CLIENT = openai.OpenAI(api_key=config.API_KEY)
+    PROMPT = config.PROMPT
 else:
     CLIENT = None
 
@@ -290,15 +291,12 @@ def new_post():
             if not CLIENT:
                 flask.flash("VIRHE: Toiminto ei ole käytössä palvelimella")
                 return flask.render_template("new_post.html", classes=classes, filled={})
-            prompt = """Keksi lyhyt postaus, jonka voisi julkaista jossakin sosiaalisessa mediassa.
-            Käytä ainoastaan suomalaisia aakkosia ja välimerkkejä, älä käytä emojeja, viivoja tai muutakaan ylimääräistä.
-            Sisällytä vastaukseen ainoastaan postauksen sisältö."""
             response = ""
             attempts = 0
             while not (0 < len(response) <= 1000 and check_string(response)):
                 if attempts:
                     print(f"Illegal generated post, trying again (attempts: {attempts})")
-                response = get_llm_response(prompt)
+                response = get_llm_response(PROMPT)
                 attempts += 1
             filled = {"content": response}
             return flask.render_template("new_post.html", classes=classes, filled=filled)
