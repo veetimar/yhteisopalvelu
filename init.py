@@ -7,7 +7,7 @@ def __create_config():
     with open("config.py", "w") as file:
         file.write(f"SECRET_KEY = \"{secrets.token_hex()}\"\n")
         file.write(f"API_KEY = \"{input("OpenAI api-key: ").strip()}\"\n")
-        file.write(f"PROMPT = \"Keksi lyhyt postaus, jonka voisi julkaista jossakin sosiaalisessa mediassa. Käytä ainoastaan suomalaisia aakkosia ja välimerkkejä, älä käytä emojeja, viivoja tai muutakaan ylimääräistä. Sisällytä vastaukseen ainoastaan postauksen sisältö.\"\n")
+        file.write("PROMPT = \"Keksi lyhyt postaus, jonka voisi julkaista jossakin sosiaalisessa mediassa. Käytä ainoastaan suomalaisia aakkosia ja välimerkkejä, älä käytä emojeja, viivoja tai muutakaan ylimääräistä. Sisällytä vastaukseen ainoastaan postauksen sisältö.\"\n")
 
 def __create_database():
     if os.path.exists("database.db"):
